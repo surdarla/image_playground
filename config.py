@@ -3,6 +3,7 @@ class CFG:
     seed=43
     # data_dir = '/content/drive/MyDrive/genesis_lab_cifar10/cifar-10-batches-py'
     data_dir = './data'
+    pth_dir = './pth'
     wandb=True
     fold=5
     n_split=5
@@ -16,7 +17,7 @@ class CFG:
     patience=10
 
     accum_iter=1 # suppoprt to do batch accumulation for backprop with effectively larger batch size
-    max_grad_norm=None
+    max_grad_norm=1
     max_lr = 1e-1
     min_lr = 1e-5
     weight_decay = 1e-6
