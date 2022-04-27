@@ -1,7 +1,6 @@
 class CFG:
     amp=True
     seed=43
-    # data_dir = '/content/drive/MyDrive/genesis_lab_cifar10/cifar-10-batches-py'
     data_dir = './data'
     pth_dir = './pth'
     wandb=True
