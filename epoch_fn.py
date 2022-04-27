@@ -2,10 +2,10 @@
 from utils import *
 from config import CFG
 from tqdm.auto import tqdm
-from  torch.cuda.amp import autocast, GradScaler
+from torch.cuda.amp import autocast, GradScaler
 
 
-def train_one_epoch(epoch,model, train_loader,criterion, optimizer,device,scheduler=None):
+def train_one_epoch(epoch,model, train_loader,criterion, optimizer,device,scaler,scheduler=None):
     model.train()
     losses = AverageMeter()
     start = end = time.time()
@@ -18,7 +18,6 @@ def train_one_epoch(epoch,model, train_loader,criterion, optimizer,device,schedu
         out = model(images)
         loss = criterion(out, targets) 
 
-      # loss
       # if CFG.accum_iter > 1:
       #   loss = loss / CFG.accum_iter
       losses.update(loss.item(),batch_size)
@@ -44,7 +43,7 @@ def train_one_epoch(epoch,model, train_loader,criterion, optimizer,device,schedu
               .format(epoch+1, step, len(train_loader), 
                       remain=timeSince(start, float(step+1)/len(train_loader)),
                       loss=losses,
-                      # grad_norm=grad_norm,
+                      grad_norm=grad_norm,
                       lr=scheduler.get_lr()[0]))
     
     return losses.avg

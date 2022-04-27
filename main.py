@@ -3,10 +3,13 @@ from config import CFG
 from utils import *
 from prepare_data import *
 from epoch_fn import *
+
+import torch
 from torch.utils.data import DataLoader
 from torch import nn
+from torch.cuda.amp import GradScaler
 
-from .model.fish import *
+from model.fish import *
 
 seed_everything(CFG.seed)
 # device 설정
@@ -57,7 +60,7 @@ for this_fold in range(CFG.fold):
         torch.cuda.empty_cache()
         start_time = time.time()
         scheduler.step()
-        avg_loss = train_one_epoch(epoch, model, train_loader, loss_tr, optimizer, device, scheduler=scheduler)
+        avg_loss = train_one_epoch(epoch, model, train_loader, loss_tr, optimizer, device,scaler, scheduler=scheduler)
         with torch.no_grad():
             avg_val_loss,avg_val_score = valid_one_epoch(epoch, model,valid_loader, loss_fn, device)
         
@@ -72,15 +75,15 @@ for this_fold in range(CFG.fold):
                 'optimizer':optimizer.state_dict(),
                 'scheduler':scheduler.state_dict(),
             }
-            torch.save(dic, CFG.data_dir + f"/pth/{CFG.model}_{this_fold}_best_.pth")
+            torch.save(dic, CFG.pth_dir + f"/{CFG.model}_{this_fold}_best_.pth")
             print('save_model')
 
         if early_stopper.stop:
             break
         
     os.rename(
-        CFG.data_dir + f"/pth/{CFG.model}_{this_fold}_best_.pth",
-        CFG.data_dir + f"/pth/{CFG.model}_{this_fold}_best_{early_stopper.best_acc:.4f}.pth"
+        CFG.pth_dir + f"/{CFG.model}_{this_fold}_best_.pth",
+        CFG.pth_dir + f"/{CFG.model}_{this_fold}_best_{early_stopper.best_acc:.4f}.pth"
     )
     
     del model, optimizer, train_loader, valid_loader, scaler, scheduler

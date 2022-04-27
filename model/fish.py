@@ -1,4 +1,5 @@
-from torch import nn
+import torch
+import torch.nn as nn
 
 def conv_block(in_channels, out_channels, pool=False):
     layers = [nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1), 
