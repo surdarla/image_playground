@@ -1,14 +1,15 @@
 import os, gc
-from config import CFG
-from utils import *
-from prepare_data import *
-from epoch_fn import *
 
 import torch
 from torch.utils.data import DataLoader
 from torch import nn
 from torch.cuda.amp import GradScaler
+from torch.optim import AdamW
 
+from config import CFG
+from utils import *
+from prepare_data import prepare_imgs_and_targets, MyDataset, transforms_train, transforms_valid
+from epoch_fn import train_one_epoch, valid_one_epoch
 from model.fish import *
 
 seed_everything(CFG.seed)
@@ -18,6 +19,7 @@ device = torch.device("cuda" if use_cuda else "cpu")
 
 X,y = prepare_imgs_and_targets(CFG.data_dir,train=True)
 print('Train starts')
+# from pprint import pprint
 # pprint(CFG.__dict__)
 for this_fold in range(CFG.fold):
     print(f"=================={this_fold+1} fold starting===================")
@@ -38,7 +40,7 @@ for this_fold in range(CFG.fold):
     model = ResNet9(3,10).to(device)
 
     scaler = GradScaler(enabled=CFG.amp)
-    optimizer = torch.optim.AdamW(model.parameters(),lr=CFG.max_lr, weight_decay=CFG.weight_decay)
+    optimizer = AdamW(model.parameters(),lr=CFG.max_lr, weight_decay=CFG.weight_decay)
 
     total_steps = len(trainset)//CFG.batch_size*CFG.epochs
     my_scheduler_dict = dict(
