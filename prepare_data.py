@@ -1,17 +1,14 @@
 
-# !pip install -q -U albumentations --no-binary qudida,albumentations
-# !echo "$(pip freeze | grep albumentations) is successfully installed"
 import os
 import pickle
 import numpy as np
-from torch.utils .data import Dataset
-
+from torch.utils.data import Dataset
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
 
 from config import CFG
-from augmix import *
+from augmix import RandomAugMix
 
 def prepare_imgs_and_targets(data_dir, train=True):
     train_list = ['data_batch_1','data_batch_2','data_batch_3','data_batch_4','data_batch_5']
@@ -34,8 +31,7 @@ def prepare_imgs_and_targets(data_dir, train=True):
             else:
                 imgs = np.concatenate([imgs,this_batch_img],axis=0)
                 targets = np.concatenate([targets,this_batch_targets],axis=0)
-            if 'labels' in mydict:
-                targets.append(mydict[b'labels'])
+
 
     return imgs, targets
 
@@ -45,16 +41,14 @@ stats = ((0.4914, 0.4822, 0.4465), (0.2022, 0.1994, 0.2009))
 def transforms_train():
     return A.Compose([
         RandomAugMix(severity=CFG.augmix, width=CFG.augmix, alpha=CFG.augmix, p=1.),
-        # A.RandomHorizontalFlip(),
-        # ColorAugmentation(),
-        A.Resize(CFG.image_size,CFG.image_size),
+        # A.Resize(CFG.image_size,CFG.image_size),
         A.Normalize(*stats),
         ToTensorV2(p=1.0),
     ])
 
 def transforms_valid():
     return A.Compose([
-        A.Resize(CFG.image_size,CFG.image_size),
+        # A.Resize(CFG.image_size,CFG.image_size),
         A.Normalize(*stats),
         ToTensorV2(p=1.0),
     ])
