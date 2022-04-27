@@ -41,14 +41,14 @@ stats = ((0.4914, 0.4822, 0.4465), (0.2022, 0.1994, 0.2009))
 def transforms_train():
     return A.Compose([
         RandomAugMix(severity=CFG.augmix, width=CFG.augmix, alpha=CFG.augmix, p=1.),
-        # A.Resize(CFG.image_size,CFG.image_size),
+        A.Resize(CFG.image_size,CFG.image_size),
         A.Normalize(*stats),
         ToTensorV2(p=1.0),
     ])
 
 def transforms_valid():
     return A.Compose([
-        # A.Resize(CFG.image_size,CFG.image_size),
+        A.Resize(CFG.image_size,CFG.image_size),
         A.Normalize(*stats),
         ToTensorV2(p=1.0),
     ])

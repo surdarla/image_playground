@@ -25,6 +25,10 @@ def accuracy(output, target, topk=(1,)):
         res.append(correct_k.mul_(100.0 / batch_size))
     return res
 
+def accuracy2(outputs, labels):
+    _, preds = torch.max(outputs, dim=1)
+    return torch.tensor(torch.sum(preds == labels).item() / len(preds))
+
 # https://www.kaggle.com/code/librauee/train-deberta-v3-large-baseline
 class AverageMeter(object):
     """Computes and stores the average and current value"""

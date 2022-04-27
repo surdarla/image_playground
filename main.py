@@ -36,8 +36,8 @@ for this_fold in range(CFG.fold):
                                 drop_last=False)
 
 
-    # model = fishnet99().to(device)
-    model = ResNet9(3,10).to(device)
+    model = fishnet99().to(device)
+    # model = ResNet9(3,10).to(device)
 
     scaler = GradScaler(enabled=CFG.amp)
     optimizer = AdamW(model.parameters(),lr=CFG.max_lr, weight_decay=CFG.weight_decay)

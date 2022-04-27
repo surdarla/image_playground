@@ -11,7 +11,7 @@ class CFG:
     model = 'test'
     print_freq=100
     batch_size=256
-    image_size=32
+    image_size=224
     epochs = 100
     patience=10
 
