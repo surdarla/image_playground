@@ -29,7 +29,7 @@ for this_fold in range(CFG.fold):
     train_loader = DataLoader(trainset,
                                 batch_size=CFG.batch_size,
                                 shuffle=True,pin_memory=use_cuda,num_workers=CFG.num_workers,
-                                drop_last=True)
+                                drop_last=False)
     valid_loader = DataLoader(validset,
                                 batch_size=CFG.batch_size,
                                 shuffle=False,pin_memory=use_cuda,num_workers=CFG.num_workers,
@@ -53,16 +53,14 @@ for this_fold in range(CFG.fold):
     )
     # scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, CFG.max_lr, epochs=CFG.epochs, steps_per_epoch=len(train_loader))
     scheduler = CosineAnnealingWarmupRestarts(optimizer, **my_scheduler_dict)
-
-    loss_tr = nn.CrossEntropyLoss().to(device) 
-    loss_fn = nn.CrossEntropyLoss().to(device)
+    loss_fn = nn.CrossEntropyLoss()
     early_stopper = EarlyStopper(CFG.patience)
 
     for epoch in range(CFG.epochs):
         torch.cuda.empty_cache()
         start_time = time.time()
-        scheduler.step()
-        avg_loss = train_one_epoch(epoch, model, train_loader, loss_tr, optimizer, device,scaler, scheduler=scheduler)
+        # scheduler.step()
+        avg_loss = train_one_epoch(epoch, model, train_loader, loss_fn, optimizer, device,scaler, scheduler=scheduler)
         with torch.no_grad():
             avg_val_loss,avg_val_score = valid_one_epoch(epoch, model,valid_loader, loss_fn, device)
         
@@ -88,7 +86,7 @@ for this_fold in range(CFG.fold):
         CFG.pth_dir + f"/{CFG.model}_{this_fold}_best_{early_stopper.best_acc:.4f}.pth"
     )
     
-    del model, optimizer, train_loader, valid_loader, scaler, scheduler
-    torch.cuda.empty_cache()
-    gc.collect()
+    # del model, optimizer, train_loader, valid_loader, scaler, scheduler
+    # torch.cuda.empty_cache()
+    # gc.collect()
 
