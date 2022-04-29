@@ -10,7 +10,7 @@ from config import CFG
 from utils import *
 from prepare_data import prepare_imgs_and_targets, MyDataset, transforms_train, transforms_valid
 from epoch_fn import train_one_epoch, valid_one_epoch
-from model.fish import *
+from model.myfish import Myfish
 
 seed_everything(CFG.seed)
 # device 설정
@@ -36,7 +36,7 @@ for this_fold in range(CFG.fold):
                                 drop_last=False)
 
 
-    model = fishnet99().to(device)
+    model = Myfish().to(device)
     # model = ResNet9(3,10).to(device)
 
     scaler = GradScaler(enabled=CFG.amp)
