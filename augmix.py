@@ -1,3 +1,4 @@
+# https://www.kaggle.com/code/haqishen/augmix-based-on-albumentations/notebook
 import numpy as np
 from PIL import Image, ImageOps, ImageEnhance
 from albumentations.core.transforms_interface import ImageOnlyTransform
