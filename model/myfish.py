@@ -26,7 +26,9 @@ class Myfish(nn.Module):
             nn.MaxPool2d(3, padding=1, stride=2)
         )
         self.tail_layer = nn.ModuleList(
-            [FishTail(64,128,2), FishTail(128,256,2),FishTail(256,512,6)]
+            [FishTail(64,128,2), 
+             FishTail(128,256,2),
+             FishTail(256,512,6)]
         )
         self.bridge = Bridge(512,2)
         self.body_layer = nn.ModuleList(
@@ -79,6 +81,8 @@ class Myfish(nn.Module):
             head_features += [ h(last_feature, body) ]
 
         out = self.classifier(head_features[-1])
+        out = torch.squeeze(out,-1)
+        out = torch.squeeze(out,-1)
         return out
         
  

@@ -1,5 +1,6 @@
 
 import time
+import numpy as np
 from utils import accuracy, AverageMeter, timeSince, accuracy2
 from config import CFG
 from tqdm.auto import tqdm
@@ -89,3 +90,15 @@ def valid_one_epoch(epoch,model, valid_loader, criterion,device,scheduler=None):
 
   return losses.avg, top1.avg
 
+def inference_one_epoch(model, data_loader, device):
+  model.eval()
+  image_preds_all = []
+
+  for step, (images, _) in tqdm(enumerate(data_loader),total=len(data_loader)):
+      images = images.to(device).float()
+      
+      image_preds = model(images)  
+      image_preds_all += [torch.softmax(image_preds, 1).detach().cpu().numpy()]
+      
+  image_preds_all = np.concatenate(image_preds_all, axis=0)
+  return image_preds_all
