@@ -1,19 +1,22 @@
+"""docstring"""
 import time
 import numpy as np
-from utils import accuracy, AverageMeter, timeSince, accuracy2
-from config import CFG
 from tqdm.auto import tqdm
 import torch
 from torch.cuda.amp import autocast
+
+from config import CFG
+from utils import AverageMeter, timeSince, accuracy2
 
 
 def train_one_epoch(
     epoch, model, train_loader, criterion, optimizer, device, scaler, scheduler=None
 ):
+    """docstring for train_one_epoch"""
     model.train()
     losses = AverageMeter()
     top1 = AverageMeter()
-    start = end = time.time()
+    start = time.time()
 
     for step, (images, targets) in enumerate(train_loader):
         images = images.to(device)
@@ -65,13 +68,14 @@ def train_one_epoch(
     return losses.avg
 
 
-def valid_one_epoch(epoch, model, valid_loader, criterion, device, scheduler=None):
+def valid_one_epoch(model, valid_loader, criterion, device):
+    """docstirng for valid_one_epoch"""
     model.eval()
 
     losses = AverageMeter()
     top1 = AverageMeter()
 
-    start = end = time.time()
+    start = time.time()
     for step, (images, targets) in enumerate(valid_loader):
         images = images.to(device)
         targets = targets.to(device)
@@ -103,10 +107,11 @@ def valid_one_epoch(epoch, model, valid_loader, criterion, device, scheduler=Non
 
 
 def inference_one_epoch(model, data_loader, device):
+    """docstring for inference_one_epoch"""
     model.eval()
     image_preds_all = []
 
-    for step, (images, _) in tqdm(enumerate(data_loader), total=len(data_loader)):
+    for (images, _) in tqdm(enumerate(data_loader), total=len(data_loader)):
         images = images.to(device).float()
 
         image_preds = model(images)
