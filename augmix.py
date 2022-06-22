@@ -3,6 +3,7 @@ import numpy as np
 from PIL import Image, ImageOps, ImageEnhance
 from albumentations.core.transforms_interface import ImageOnlyTransform
 
+
 def int_parameter(level, maxval):
     """Helper function to scale `val` between 0 and maxval .
     Args:
@@ -24,7 +25,7 @@ def float_parameter(level, maxval):
     Returns:
     A float that results from scaling `maxval` according to `level`.
     """
-    return float(level) * maxval / 10.
+    return float(level) * maxval / 10.0
 
 
 def sample_level(n):
@@ -60,36 +61,36 @@ def shear_x(pil_img, level):
     level = float_parameter(sample_level(level), 0.3)
     if np.random.uniform() > 0.5:
         level = -level
-    return pil_img.transform(pil_img.size,
-                           Image.AFFINE, (1, level, 0, 0, 1, 0),
-                           resample=Image.BILINEAR)
+    return pil_img.transform(
+        pil_img.size, Image.AFFINE, (1, level, 0, 0, 1, 0), resample=Image.BILINEAR
+    )
 
 
 def shear_y(pil_img, level):
     level = float_parameter(sample_level(level), 0.3)
     if np.random.uniform() > 0.5:
         level = -level
-    return pil_img.transform(pil_img.size,
-                           Image.AFFINE, (1, 0, 0, level, 1, 0),
-                           resample=Image.BILINEAR)
+    return pil_img.transform(
+        pil_img.size, Image.AFFINE, (1, 0, 0, level, 1, 0), resample=Image.BILINEAR
+    )
 
 
 def translate_x(pil_img, level):
     level = int_parameter(sample_level(level), pil_img.size[0] / 3)
     if np.random.random() > 0.5:
         level = -level
-    return pil_img.transform(pil_img.size,
-                           Image.AFFINE, (1, 0, level, 0, 1, 0),
-                           resample=Image.BILINEAR)
+    return pil_img.transform(
+        pil_img.size, Image.AFFINE, (1, 0, level, 0, 1, 0), resample=Image.BILINEAR
+    )
 
 
 def translate_y(pil_img, level):
     level = int_parameter(sample_level(level), pil_img.size[0] / 3)
     if np.random.random() > 0.5:
         level = -level
-    return pil_img.transform(pil_img.size,
-                           Image.AFFINE, (1, 0, 0, 0, 1, level),
-                           resample=Image.BILINEAR)
+    return pil_img.transform(
+        pil_img.size, Image.AFFINE, (1, 0, 0, 0, 1, level), resample=Image.BILINEAR
+    )
 
 
 # operation that overlaps with ImageNet-C's test set
@@ -117,14 +118,33 @@ def sharpness(pil_img, level):
 
 
 augmentations = [
-    autocontrast, equalize, posterize, rotate, solarize, shear_x, shear_y,
-    translate_x, translate_y
+    autocontrast,
+    equalize,
+    posterize,
+    rotate,
+    solarize,
+    shear_x,
+    shear_y,
+    translate_x,
+    translate_y,
 ]
 
 augmentations_all = [
-    autocontrast, equalize, posterize, rotate, solarize, shear_x, shear_y,
-    translate_x, translate_y, color, contrast, brightness, sharpness
+    autocontrast,
+    equalize,
+    posterize,
+    rotate,
+    solarize,
+    shear_x,
+    shear_y,
+    translate_x,
+    translate_y,
+    color,
+    contrast,
+    brightness,
+    sharpness,
 ]
+
 
 def apply_op(image, op, severity):
     #   image = np.clip(image, 0, 255)
@@ -132,7 +152,8 @@ def apply_op(image, op, severity):
     pil_img = op(pil_img, severity)
     return np.asarray(pil_img)
 
-def augment_and_mix(image, severity=3, width=3, depth=-1, alpha=1.):
+
+def augment_and_mix(image, severity=3, width=3, depth=-1, alpha=1.0):
     """Perform AugMix augmentations and compute mixture.
     Args:
     image: Raw input image as float32 np.ndarray of shape (h, w, c)
@@ -144,8 +165,7 @@ def augment_and_mix(image, severity=3, width=3, depth=-1, alpha=1.):
     Returns:
     mixed: Augmented and mixed image.
     """
-    ws = np.float32(
-      np.random.dirichlet([alpha] * width))
+    ws = np.float32(np.random.dirichlet([alpha] * width))
     m = np.float32(np.random.beta(alpha, alpha))
 
     mix = np.zeros_like(image).astype(np.float32)
@@ -165,8 +185,9 @@ def augment_and_mix(image, severity=3, width=3, depth=-1, alpha=1.):
 
 
 class RandomAugMix(ImageOnlyTransform):
-
-    def __init__(self, severity=3, width=3, depth=-1, alpha=1., always_apply=False, p=0.5):
+    def __init__(
+        self, severity=3, width=3, depth=-1, alpha=1.0, always_apply=False, p=0.5
+    ):
         super().__init__(always_apply, p)
         self.severity = severity
         self.width = width
@@ -175,10 +196,6 @@ class RandomAugMix(ImageOnlyTransform):
 
     def apply(self, image, **params):
         image = augment_and_mix(
-            image,
-            self.severity,
-            self.width,
-            self.depth,
-            self.alpha
+            image, self.severity, self.width, self.depth, self.alpha
         )
         return image
