@@ -3,6 +3,7 @@
 # platform: osx-64
 # conda list -e > requirements.txt
 # pip install -r requirements.txt
+
 albumentations=1.2.0=pypi_0
 appdirs=1.4.4=pyhd3eb1b0_0
 astroid=2.9.0=py310hecd8cb5_0
@@ -53,7 +54,7 @@ opencv-python-headless=4.6.0.66=pypi_0
 openssl=1.1.1o=hca72f7f_0
 packaging=21.3=pypi_0
 pathspec=0.7.0=py_0
-pillow=9.0.1=py310hde71d04_0
+# pillow=9.0.1=py310hde71d04_0
 pip=21.2.4=py310hecd8cb5_0
 platformdirs=2.4.0=pyhd3eb1b0_0
 pre-commit=2.19.0=pypi_0
