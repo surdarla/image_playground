@@ -3,11 +3,9 @@ import os
 import pickle
 import numpy as np
 from PIL import Image
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
-
-import pytorch_lightning as pl
 
 from .augmix import RandomAugMix
 

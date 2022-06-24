@@ -7,7 +7,7 @@ class CFG:
     wandb_key = "93460ff86561b201141546a407885ba3c8318d81"
     seed = 43
     data_dir = "./data/cifar10"
-    pth_dir = "./pth"
+    pth_dir = "/pth"
     fold = 5
     n_split = 5
     num_workers = 2
