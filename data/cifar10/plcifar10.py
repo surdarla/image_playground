@@ -1,13 +1,82 @@
 """modules for pytroch-lighting cifar10"""
+import os
+import pickle
+from PIL import Image
 from typing import Optional
 import pytorch_lightning as pl
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 import torchvision
 from torchvision import transforms
+import numpy as np
 
 from config import CFG
 from utils import mysplit
-from data.prepare_data import prepare_imgs_and_targets, MyDataset
+
+
+def prepare_imgs_and_targets(data_dir, train=True):
+    """_summary_
+
+    Args:
+        data_dir (str): path of data directory
+        train (bool, optional): whether to collect data for train or not. Defaults to True.
+
+    Returns:
+        imgs, traget labels(10classes for cifar10)
+    """
+    train_list = [
+        "data_batch_1",
+        "data_batch_2",
+        "data_batch_3",
+        "data_batch_4",
+        "data_batch_5",
+    ]
+    test_list = ["test_batch"]
+    imgs = []
+    targets = []
+    if train:
+        downloaded_list = train_list
+    else:
+        downloaded_list = test_list
+    for file_name in downloaded_list:
+        file_path = os.path.join(data_dir, file_name)
+        with open(file_path, "rb") as file:
+            mydict = pickle.load(file, encoding="bytes")
+            this_batch_img = (
+                mydict[b"data"].reshape((-1, 3, 32, 32)).transpose(0, 2, 3, 1)
+            )
+            this_batch_targets = mydict[b"labels"]
+            if file_name == "data_batch_1" or train is False:
+                imgs = this_batch_img
+                targets = this_batch_targets
+            else:
+                imgs = np.concatenate([imgs, this_batch_img], axis=0)
+                targets = np.concatenate([targets, this_batch_targets], axis=0)
+
+    return imgs, targets
+
+
+class MyDataset(Dataset):
+    """_summary_
+
+    Args:
+        Dataset (_type_): _description_
+    """
+
+    def __init__(self, imgs, targets, transform):
+        self.imgs = imgs
+        self.targets = targets
+        self.transform = transform
+
+    def __getitem__(self, index):
+        img, target = self.imgs[index], self.targets[index]
+        img = Image.fromarray(img)
+        img = self.transform(img)
+        # if self.transform is not None: ## when albumentation
+        #     img = self.transform(image=img)["image"]
+        return img, target
+
+    def __len__(self):
+        return len(self.imgs)
 
 
 class CIFAR10Data(pl.LightningDataModule):
