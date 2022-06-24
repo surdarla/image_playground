@@ -1,3 +1,4 @@
+"""doctring for module"""
 import torch
 import torch.nn as nn
 
@@ -103,7 +104,8 @@ class UR(nn.Module):
     """
     Construct Up-RefinementBlock module. (URBlock from the original paper)
     Consisted of Residual Block and Conv Blocks.
-    Not like DRBlock, this module reduces the number of channels of concatenated feature maps in the shortcut path.
+    Not like DRBlock, this module reduces the number of channels of
+    concatenated feature maps in the shortcut path.
 
     Args:
         in_c : Number of channels in the input image
@@ -243,7 +245,8 @@ class FishBody(nn.Module):
 class FishHead(nn.Module):
     r"""Construct FishHead module.
     Each instances corresponds to each stages.
-    Different with Offical Code : we used shortcut layer in this Module. (shortcut layer is used according to the original paper)
+    Different with Offical Code :
+    we used shortcut layer in this Module. (shortcut layer is used according to the original paper)
 
     Args:
         in_c : Number of channels in the input image
