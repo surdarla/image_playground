@@ -21,7 +21,7 @@ trainer = pl.Trainer(
     devices=1 if torch.cuda.is_available() else None,  # limiting got iPython runs
     logger=wandb_logger,
     log_every_n_steps=50,
-    callbacks=[EarlyStopping(monitor="VALIDATION LOSS", mode="min")],
+    callbacks=[EarlyStopping(monitor="VALID LOSS", mode="min")],
 )
 trainer.fit(model, cifar)
 trainer.test(model, cifar)
