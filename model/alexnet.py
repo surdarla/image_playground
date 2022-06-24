@@ -81,13 +81,14 @@ class AlexNetLit(pl.LightningModule):
         self.test_acc = torchmetrics.Accuracy()
 
     def forward(self, x_input):
-        features = self.feature_extractor(x_input)
+        features = self.model.feature_extractor(x_input)
         # viewed_features = features.view(features.size(0), -1)
         # out = self.classifier(viewed_features)
         # return out, viewed_features
-        avgpooled_features = self.avgpool(features)
+        avgpooled_features = self.model.avgpool(features)
         flat = torch.nn.Flatten(avgpooled_features, 1)
-        out = self.classifier(flat)
+        out = self.model.classifier(flat)
+        return out
 
     def configure_optimizers(self):
         print(self.hparams["lr"])
