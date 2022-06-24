@@ -1,7 +1,7 @@
 """Alexnet module import from torchvision.models.alexnet"""
 import torch
 import torchmetrics
-from torch.nn import nn
+from torch import nn
 import pytorch_lightning as pl
 
 
@@ -70,9 +70,10 @@ class AlexNetLit(pl.LightningModule):
         pl (_type_): _description_
     """
 
-    def __init__(self, num_clasees, lr):
+    def __init__(self, num_classes: int, lr: float) -> None:
         super().__init__()
-        self.model = AlexNet(num_clasees)
+        self.num_classes = num_classes
+        self.model = AlexNet(self.num_classes)
         self.loss = nn.CrossEntropyLoss()
         self.save_hyperparameters()
         self.train_acc = torchmetrics.Accuracy()
