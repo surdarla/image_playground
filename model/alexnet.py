@@ -58,7 +58,7 @@ class AlexNet(nn.Module):
         # out = self.classifier(viewed_features)
         # return out, viewed_features
         avgpooled_features = self.avgpool(features)
-        flat = torch.nn.Flatten(avgpooled_features, 1)
+        flat = torch.flatten(avgpooled_features, 1)
         out = self.classifier(flat)
         return out
 
@@ -86,7 +86,7 @@ class AlexNetLit(pl.LightningModule):
         # out = self.classifier(viewed_features)
         # return out, viewed_features
         avgpooled_features = self.model.avgpool(features)
-        flat = torch.nn.Flatten(avgpooled_features, 1)
+        flat = torch.flatten(avgpooled_features, 1)
         out = self.model.classifier(flat)
         return out
 
