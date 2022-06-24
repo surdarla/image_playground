@@ -17,7 +17,7 @@ class CFG:
     print_freq = 100
     batch_size = 128
     image_size = 128
-    epochs = 10
+    epochs = 30
     patience = 3
 
     accum_iter = 1
