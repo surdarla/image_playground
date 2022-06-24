@@ -25,7 +25,7 @@ trainer = pl.Trainer(
     logger=wandb_logger,
     log_every_n_steps=50,
     callbacks=[
-        EarlyStopping(monitor="VALID LOSS", mode="auto", patience=5, verbose=True)
+        EarlyStopping(monitor="VALID LOSS", mode="min", patience=5, verbose=True)
     ],
 )
 trainer.fit(model, cifar)
