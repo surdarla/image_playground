@@ -16,7 +16,7 @@ model = AlexNetLit(10, lr=CFG.min_lr)
 wandb_logger = WandbLogger(name="test1", project="image_playground")
 pl.seed_everything(43)
 trainer = pl.Trainer(
-    max_epochs=10,
+    max_epochs=CFG.epochs,
     accelerator="auto",
     devices=1 if torch.cuda.is_available() else None,  # limiting got iPython runs
     logger=wandb_logger,
