@@ -1,8 +1,11 @@
 """Alexnet module import from torchvision.models.alexnet"""
 import torch
-import torchmetrics
 from torch import nn
+from torch.optim.lr_scheduler import OneCycleLR
+import torchmetrics
 import pytorch_lightning as pl
+
+from config import CFG
 
 
 class AlexNet(nn.Module):
@@ -54,9 +57,6 @@ class AlexNet(nn.Module):
             torch.Tensor: _description_
         """
         features = self.feature_extractor(x_input)
-        # viewed_features = features.view(features.size(0), -1)
-        # out = self.classifier(viewed_features)
-        # return out, viewed_features
         avgpooled_features = self.avgpool(features)
         flat = torch.flatten(avgpooled_features, 1)
         out = self.classifier(flat)
@@ -82,17 +82,29 @@ class AlexNetLit(pl.LightningModule):
 
     def forward(self, x_input):
         features = self.model.feature_extractor(x_input)
-        # viewed_features = features.view(features.size(0), -1)
-        # out = self.classifier(viewed_features)
-        # return out, viewed_features
         avgpooled_features = self.model.avgpool(features)
         flat = torch.flatten(avgpooled_features, 1)
         out = self.model.classifier(flat)
         return out
 
     def configure_optimizers(self):
-        print(self.hparams["lr"])
-        return torch.optim.Adam(self.parameters(), lr=self.hparams["lr"])
+        optimizer = torch.optim.SGD(
+            self.parameters(),
+            lr=self.hparams.lr,
+            momentum=0.9,
+            weight_decay=5e-4,
+        )
+        steps_per_epoch = 45000 // CFG.batch_size
+        scheduler_dict = {
+            "scheduler": OneCycleLR(
+                optimizer,
+                0.1,
+                epochs=self.trainer.max_epochs,
+                steps_per_epoch=steps_per_epoch,
+            ),
+            "interval": "step",
+        }
+        return {"optimizer": optimizer, "lr_scheduler": scheduler_dict}
 
     def training_step(self, batch, batch_idx):
         images, targets = batch
