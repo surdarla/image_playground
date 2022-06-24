@@ -4,6 +4,7 @@
 class CFG:
     """_summary_"""
 
+    wandb_key = "93460ff86561b201141546a407885ba3c8318d81"
     seed = 43
     data_dir = "./data/cifar10"
     pth_dir = "./pth"
