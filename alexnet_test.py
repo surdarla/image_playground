@@ -2,18 +2,23 @@
 import torch
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
+from pytorch_lightning.callbacks import LearningRateMonitor
 from pytorch_lightning.loggers import WandbLogger
 import wandb
 
 from data.cifar10.plcifar10 import CIFAR10Data
 from config import CFG
 from model.alexnet import AlexNetLit
+from model.vgg import VGG
 
 wandb.login(key=CFG.wandb_key)
 cifar = CIFAR10Data(CFG.data_dir, CFG.batch_size, 0)
 cifar.prepare_data()
 cifar.setup(stage="fit")
-model = AlexNetLit(10, lr=CFG.min_lr)
+if CFG.model is "alexnet":
+    model = AlexNetLit(10, lr=CFG.min_lr)
+elif CFG.model is "vgg":
+    model = VGG()
 wandb_logger = WandbLogger(name="test1", project="image_playground")
 pl.seed_everything(43)
 trainer = pl.Trainer(
@@ -25,7 +30,8 @@ trainer = pl.Trainer(
     logger=wandb_logger,
     log_every_n_steps=50,
     callbacks=[
-        EarlyStopping(monitor="VALID LOSS", mode="min", patience=5, verbose=True)
+        EarlyStopping(monitor="VALID LOSS", mode="min", patience=5, verbose=True),
+        LearningRateMonitor(logging_interval="step"),
     ],
 )
 trainer.fit(model, cifar)

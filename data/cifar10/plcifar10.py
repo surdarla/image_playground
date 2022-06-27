@@ -1,8 +1,8 @@
 """modules for pytroch-lighting cifar10"""
 import os
 import pickle
-from PIL import Image
 from typing import Optional
+from PIL import Image
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader, Dataset
 import torchvision
@@ -104,9 +104,9 @@ class CIFAR10Data(pl.LightningDataModule):
 
     def setup(self, stage: Optional[str] = None) -> None:
         if stage == "fit":
-            X, y = prepare_imgs_and_targets(self.root, train=True)
+            image, target = prepare_imgs_and_targets(self.root, train=True)
             img_train, img_valid, target_train, target_valid = mysplit(
-                X, y, self.this_fold, CFG.n_split, CFG.seed
+                image, target, self.this_fold, CFG.n_split, CFG.seed
             )
             self.trainset = MyDataset(
                 img_train,
@@ -131,10 +131,10 @@ class CIFAR10Data(pl.LightningDataModule):
                 ),
             )
         if stage == "test":
-            X, y = prepare_imgs_and_targets(self.root, train=False)
+            image, target = prepare_imgs_and_targets(self.root, train=False)
             self.testset = MyDataset(
-                X,
-                y,
+                image,
+                target,
                 transform=transforms.Compose(
                     [
                         torchvision.transforms.ToTensor(),

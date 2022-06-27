@@ -109,7 +109,7 @@ class AlexNetLit(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         images, targets = batch
         logits = self(images)
-        preds = torch.argmax(logits, dim=1)
+        # preds = torch.argmax(logits, dim=1)
         loss = self.loss(logits, targets)
         acc = self.train_acc(logits, targets)
         self.log("TRAIN LOSS", loss, on_epoch=True)
@@ -119,7 +119,7 @@ class AlexNetLit(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         images, targets = batch
         logits = self(images)
-        preds = torch.argmax(logits, dim=1)
+        # preds = torch.argmax(logits, dim=1)
         loss = self.loss(logits, targets)
         acc = self.valid_acc(logits, targets)
         self.log("VALID LOSS", loss, on_step=False, on_epoch=True)
@@ -129,7 +129,7 @@ class AlexNetLit(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         images, targets = batch
         logits = self(images)
-        preds = torch.argmax(logits, dim=1)
+        # preds = torch.argmax(logits, dim=1)
         loss = self.loss(logits, targets)
         acc = self.valid_acc(logits, targets)
         self.log("TEST LOSS", loss, on_step=False, on_epoch=True)

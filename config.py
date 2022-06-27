@@ -12,7 +12,7 @@ class CFG:
     n_split = 5
     num_workers = 2
 
-    MODEL = "final"
+    MODEL = "vgg"
     amp = True
     print_freq = 100
     batch_size = 128
