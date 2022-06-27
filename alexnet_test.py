@@ -15,9 +15,9 @@ wandb.login(key=CFG.wandb_key)
 cifar = CIFAR10Data(CFG.data_dir, CFG.batch_size, 0)
 cifar.prepare_data()
 cifar.setup(stage="fit")
-if CFG.model is "alexnet":
+if CFG.MODEL is "alexnet":
     model = AlexNetLit(10, lr=CFG.min_lr)
-elif CFG.model is "vgg":
+elif CFG.MODEL is "vgg":
     model = VGG()
 wandb_logger = WandbLogger(name="test1", project="image_playground")
 pl.seed_everything(43)
