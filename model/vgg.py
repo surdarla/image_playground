@@ -157,7 +157,7 @@ class VGG(pl.LightningModule):
         return {
             "optimizer": optimizer,
             "lr_scheduler": lr_scheduler,
-            "monitor": "val_loss",
+            "monitor": "VALID_LOSS",
         }
 
     def training_step(self, batch, batch_idx):
