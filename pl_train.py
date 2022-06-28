@@ -48,7 +48,7 @@ lr_finder = trainer.tuner.lr_find(
     max_lr=1e-3,
     num_training=100,
 )
-fig = lr_finder.plot(suggestion=True)
+fig = lr_finder.plot(suggest=True)
 fig.savefig("/")
 new_lr = lr_finder.suggestion()
 print(f"Suggested learning rate: {new_lr}")
