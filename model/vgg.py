@@ -157,12 +157,12 @@ class VGG(pl.LightningModule):
             self.parameters(), lr=self.learning_rate, momentum=0.9, weight_decay=5e-4
         )
         lr_scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=5)
-        return {optimizer: optimizer, lr_scheduler: lr_scheduler}
+        return {"optimizer": optimizer, "lr_scheduler": lr_scheduler}
         # return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
 
     def training_step(self, batch, batch_idx):
         images, targets = batch
-        logits = self(images)
+        logits = self.forward(images)
         loss = self.loss(logits, targets)
         acc1 = self.top1(logits, targets)
         acc5 = self.top5(logits, targets)
@@ -179,15 +179,15 @@ class VGG(pl.LightningModule):
 
     def _shared_eval(self, batch, batch_idx, prefix):
         images, targets = batch
-        logits = self(images)
+        logits = self.forward(images)
         loss = self.loss(logits, targets)
-        acc1 = self.top1(logits, targets)
-        acc5 = self.top5(logits, targets)
+        self.acc1 = self.top1(logits, targets)
+        self.acc5 = self.top5(logits, targets)
         self.log_dict(
             {
                 f"{prefix} LOSS": loss,
-                f"{prefix} TOP1 ACC": acc1,
-                f"{prefix} TOP5 ACC": acc5,
+                f"{prefix} TOP1 ACC": self.acc1,
+                f"{prefix} TOP5 ACC": self.acc5,
             }
         )
         return loss
