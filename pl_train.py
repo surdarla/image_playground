@@ -37,7 +37,7 @@ trainer = pl.Trainer(
         TQDMProgressBar(refresh_rate=50),
     ],
 )
-trainer.tune(model)
+trainer.tune(model, cifar)
 trainer.fit(model, cifar)
 trainer.test(model, cifar)
 trainer.save_checkpoint(CFG.pth_dir, f"{CFG.MODEL}.pth")
