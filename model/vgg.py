@@ -8,6 +8,7 @@ from torch.nn import functional as F
 
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import pytorch_lightning as pl
+import deepspeed
 from deepspeed.ops.adam import FusedAdam
 
 # from https://arxiv.org/pdf/1409.1556.pdf
@@ -94,8 +95,9 @@ class VGG(pl.LightningModule):
             nn.Linear(4096, 4096),
             nn.ReLU(inplace=True),
             nn.Dropout(p=dropout),
-            nn.Linear(4096, num_classes),
+            # nn.Linear(4096, num_classes),
         )
+        self.last_act = nn.Linear(4096, num_classes)
         if init_weight:
             self._initialize_weights()
 
@@ -146,11 +148,16 @@ class VGG(pl.LightningModule):
         return nn.Sequential(*layers)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """pytorch-lightning team recommend to use forward for only inference(predict)"""
+        """
+        pytorch-lightning team recommend to use forward for only inference(predict)
+        depart last linear to checkpoint deepspeed
+        activations are deleted afther use, and re-calculated during the backward pass
+        """
         x_1 = self.conv_layers(x)
         x_2 = self.avgpool(x_1)
         x_3 = torch.flatten(x_2, 1)
-        out = self.classifier(x_3)
+        last = self.classifier(x_3)
+        out = deepspeed.checkpointing.chechpoint(self.last_act, last)
         return out
 
     def configure_optimizers(self):
