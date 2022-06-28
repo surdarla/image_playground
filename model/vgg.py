@@ -81,9 +81,8 @@ class VGG(pl.LightningModule):
         self.loss = nn.CrossEntropyLoss()
         self.save_hyperparameters()
         self.learning_rate = learning_rate
-        self.train_acc = torchmetrics.Accuracy()
-        self.valid_acc = torchmetrics.Accuracy()
-        self.test_acc = torchmetrics.Accuracy()
+        self.top1 = torchmetrics.Accuracy()
+        self.top5 = torchmetrics.Accuracy(top_k=5)
 
         self.conv_layers = self.make_layers(cfgs[model], batch_norm=batch_norm)
         self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
@@ -146,7 +145,7 @@ class VGG(pl.LightningModule):
         return nn.Sequential(*layers)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """docstring for forward"""
+        """pytorch-lightning team recommend to use forward for only inference"""
         x_1 = self.conv_layers(x)
         x_2 = self.avgpool(x_1)
         x_3 = torch.flatten(x_2, 1)
@@ -169,34 +168,48 @@ class VGG(pl.LightningModule):
         images, targets = batch
         logits = self(images)
         loss = self.loss(logits, targets)
-        acc = self.train_acc(F.softmax(logits, dim=-1), targets)
+        acc1 = self.top1(F.softmax(logits, dim=-1), targets)
+        acc5 = self.top5(F.softmax(logits, dim=-1), targets)
         self.log("TRAIN LOSS", loss, on_epoch=True, prog_bar=True, logger=True)
-        self.log("TRAIN ACC", acc, on_epoch=True, prog_bar=True, logger=True)
+        self.log("TRAIN TOP1 ACC", acc1, on_epoch=True, prog_bar=True, logger=True)
+        self.log("TRAIN TOP5 ACC", acc5, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
-        images, targets = batch
-        logits = self(images)
-        loss = self.loss(logits, targets)
-        acc = self.valid_acc(F.softmax(logits, dim=-1), targets)
-        self.log(
-            "VALID LOSS", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True
-        )
-        self.log(
-            "VALID ACC", acc, on_step=False, on_epoch=True, prog_bar=True, logger=True
-        )
-        return loss
+        self._shared_eval(batch, batch_idx, "VALID")
 
     def test_step(self, batch, batch_idx):
+        self._shared_eval(batch, batch_idx, "TEST")
+
+    def _shared_eval(self, batch, batch_idx, prefix):
         images, targets = batch
         logits = self(images)
         loss = self.loss(logits, targets)
         preds = torch.argmax(logits, dim=1)
-        acc = self.valid_acc(preds, targets)
+        acc1 = self.top1(preds, targets)
+        acc5 = self.top5(preds, targets)
         self.log(
-            "TEST LOSS", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True
+            f"{prefix}_LOSS",
+            loss,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=True,
+            logger=True,
         )
         self.log(
-            "TEST ACC", acc, on_step=False, on_epoch=True, prog_bar=True, logger=True
+            f"{prefix}_TOP1 ACC",
+            acc1,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=True,
+            logger=True,
+        )
+        self.log(
+            f"{prefix}_TOP5 ACC",
+            acc5,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=True,
+            logger=True,
         )
         return loss
