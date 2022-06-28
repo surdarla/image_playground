@@ -40,7 +40,7 @@ trainer = pl.Trainer(
     ],
 )
 # trainer.tune(model, datamodule=cifar)
-trainer.tune(model)
+trainer.tune(model, cifar.train_dataloader())
 trainer.fit(model, cifar)
 trainer.test(model, cifar)
 trainer.save_checkpoint(CFG.pth_dir, f"{CFG.MODEL}.pth")
