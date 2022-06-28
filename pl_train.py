@@ -30,7 +30,7 @@ trainer = pl.Trainer(
     # max_epochs=100, # max_epochs=-1
     accelerator="auto",
     # auto_lr_find=True,
-    auto_scale_batch_size="binsearch",
+    # auto_scale_batch_size="binsearch",
     accumulate_grad_batches={0: 8, 4: 4, 8: 1},
     gradient_clip_val=0.5,
     # gradient_clip_algorithm="value",
@@ -69,7 +69,7 @@ trainer = pl.Trainer(
 # print(f"Suggested learning rate: {new_lr}")
 # model.hparams.lr = new_lr
 
-trainer.tune(model, datamodule=cifar)
+# trainer.tune(model, datamodule=cifar)
 trainer.fit(model, cifar)
 trainer.test(model, cifar)
 trainer.save_checkpoint(CFG.pth_dir, f"{CFG.MODEL}.pth")
