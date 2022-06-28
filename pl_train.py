@@ -39,8 +39,21 @@ trainer = pl.Trainer(
         TQDMProgressBar(refresh_rate=50),
     ],
 )
-# trainer.tune(model, datamodule=cifar)
-trainer.tune(model, cifar.train_dataloader())
+# getting new_lr from auto_lr_finder
+lr_finder = trainer.tuner.lr_find(
+    model,
+    cifar.train_dataloader(),
+    mode="exponential",
+    min_lr=1e-6,
+    max_lr=1e-3,
+    num_training=100,
+)
+fig = lr_finder.plot(suggestion=True)
+fig.savefig("/")
+new_lr = lr_finder.suggestion()
+print(f"Suggested learning rate: {new_lr}")
+model.hparams.lr = new_lr
+
 trainer.fit(model, cifar)
 trainer.test(model, cifar)
 trainer.save_checkpoint(CFG.pth_dir, f"{CFG.MODEL}.pth")
