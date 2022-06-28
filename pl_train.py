@@ -42,15 +42,16 @@ trainer = pl.Trainer(
         LearningRateMonitor(logging_interval="step"),
         TQDMProgressBar(refresh_rate=50),
     ],
-    strategy=DeepSpeedStrategy(
-        stage=3,
-        offload_optimizer=True,
-        offload_parameters=True,
-        # remote_device='nvme',
-        # offload_params_device='nvme',
-        # offload_optimizer_device='nvme',
-        # nvme_path="/mnt/nvme",
-    ),
+    # strategy=DeepSpeedStrategy(
+    #     stage=3,
+    #     offload_optimizer=True,
+    #     offload_parameters=True,
+    #     # remote_device='nvme',
+    #     # offload_params_device='nvme',
+    #     # offload_optimizer_device='nvme',
+    #     # nvme_path="/mnt/nvme",
+    # ),
+    strategy="deepspeed_stage_2_offload",
     precision=16,
 )
 

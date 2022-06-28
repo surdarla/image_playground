@@ -95,9 +95,9 @@ class VGG(pl.LightningModule):
             nn.Linear(4096, 4096),
             nn.ReLU(inplace=True),
             nn.Dropout(p=dropout),
-            # nn.Linear(4096, num_classes),
+            nn.Linear(4096, num_classes),
         )
-        self.last_act = nn.Linear(4096, num_classes)
+        # self.last_act = nn.Linear(4096, num_classes)
         if init_weight:
             self._initialize_weights()
 
@@ -156,8 +156,9 @@ class VGG(pl.LightningModule):
         x_1 = self.conv_layers(x)
         x_2 = self.avgpool(x_1)
         x_3 = torch.flatten(x_2, 1)
-        last = self.classifier(x_3)
-        out = deepspeed.checkpointing.chechpoint(self.last_act, last)
+        out = self.classifier(x_3)
+        # last = self.classifier(x_3)
+        # out = deepspeed.checkpointing.checkpoint(self.last_act, last)
         return out
 
     def configure_optimizers(self):
