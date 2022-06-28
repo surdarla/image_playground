@@ -26,7 +26,7 @@ pl.seed_everything(43)
 trainer = pl.Trainer(
     # max_epochs=100, # max_epochs=-1
     accelerator="auto",
-    auto_lr_find=True,
+    # auto_lr_find=True,
     accumulate_grad_batches={0: 8, 4: 4, 8: 1},
     gradient_clip_val=0.5,
     gradient_clip_algorithm="value",
@@ -40,19 +40,19 @@ trainer = pl.Trainer(
     ],
 )
 # getting new_lr from auto_lr_finder
-lr_finder = trainer.tuner.lr_find(
-    model,
-    cifar.train_dataloader(),
-    mode="exponential",
-    min_lr=1e-6,
-    max_lr=1e-3,
-    num_training=100,
-)
-fig = lr_finder.plot(suggest=True)
-fig.savefig("/")
-new_lr = lr_finder.suggestion()
-print(f"Suggested learning rate: {new_lr}")
-model.hparams.lr = new_lr
+# lr_finder = trainer.tuner.lr_find(
+#     model,
+#     cifar.train_dataloader(),
+#     mode="exponential",
+#     min_lr=1e-6,
+#     max_lr=1e-3,
+#     num_training=100,
+# )
+# fig = lr_finder.plot(suggest=True)
+# fig.savefig("/")
+# new_lr = lr_finder.suggestion()
+# print(f"Suggested learning rate: {new_lr}")
+# model.hparams.lr = new_lr
 
 trainer.fit(model, cifar)
 trainer.test(model, cifar)
