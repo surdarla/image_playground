@@ -26,7 +26,7 @@ pl.seed_everything(43)
 trainer = pl.Trainer(
     max_epochs=100,
     accelerator="auto",
-    auto_lr_find=True,
+    # auto_lr_find=True,
     # auto_scale_batch_size=True,
     devices=1 if torch.cuda.is_available() else None,  # limiting got iPython runs
     logger=wandb_logger,
@@ -37,7 +37,7 @@ trainer = pl.Trainer(
         TQDMProgressBar(refresh_rate=50),
     ],
 )
-trainer.tune(model, cifar)
+# trainer.tune(model, cifar)
 trainer.fit(model, cifar)
 trainer.test(model, cifar)
 trainer.save_checkpoint(CFG.pth_dir, f"{CFG.MODEL}.pth")
