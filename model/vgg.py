@@ -167,9 +167,9 @@ class VGG(pl.LightningModule):
         # acc5 = self.top5(F.softmax(logits, dim=-1), targets)
         acc1 = self.top1(logits, targets)
         acc5 = self.top5(logits, targets)
-        self.log("TRAIN LOSS", loss, on_epoch=True, prog_bar=True, logger=True)
-        self.log("TRAIN TOP1 ACC", acc1, on_epoch=True, prog_bar=True, logger=True)
-        self.log("TRAIN TOP5 ACC", acc5, on_epoch=True, prog_bar=True, logger=True)
+        self.log("TRAIN LOSS", loss, prog_bar=True)
+        self.log("TRAIN TOP1 ACC", acc1, prog_bar=True)
+        self.log("TRAIN TOP5 ACC", acc5, prog_bar=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -188,25 +188,16 @@ class VGG(pl.LightningModule):
         self.log(
             f"{prefix} LOSS",
             loss,
-            on_step=False,
-            on_epoch=True,
             prog_bar=True,
-            logger=True,
         )
         self.log(
             f"{prefix} TOP1 ACC",
             acc1,
-            on_step=False,
-            on_epoch=True,
             prog_bar=True,
-            logger=True,
         )
         self.log(
             f"{prefix} TOP5 ACC",
             acc5,
-            on_step=False,
-            on_epoch=True,
             prog_bar=True,
-            logger=True,
         )
         return loss
