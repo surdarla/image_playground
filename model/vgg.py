@@ -6,7 +6,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-# from torch.optim.lr_scheduler import ReduceLROnPlateau
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 import pytorch_lightning as pl
 
 # from https://arxiv.org/pdf/1409.1556.pdf
@@ -145,7 +145,7 @@ class VGG(pl.LightningModule):
         return nn.Sequential(*layers)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """pytorch-lightning team recommend to use forward for only inference"""
+        """pytorch-lightning team recommend to use forward for only inference(predict)"""
         x_1 = self.conv_layers(x)
         x_2 = self.avgpool(x_1)
         x_3 = torch.flatten(x_2, 1)
@@ -153,23 +153,22 @@ class VGG(pl.LightningModule):
         return out
 
     def configure_optimizers(self):
-        # optimizer = torch.optim.SGD(
-        #     self.parameters(), lr=0.01, momentum=0.9, weight_decay=5e-4
-        # )
-        # lr_scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=5)
-        return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
+        optimizer = torch.optim.SGD(
+            self.parameters(), lr=0.01, momentum=0.9, weight_decay=5e-4
+        )
+        lr_scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=5)
+        return {optimizer: optimizer, lr_scheduler: lr_scheduler}
+        # return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
 
     def training_step(self, batch, batch_idx):
         images, targets = batch
         logits = self(images)
         loss = self.loss(logits, targets)
-        # acc1 = self.top1(F.softmax(logits, dim=-1), targets)
-        # acc5 = self.top5(F.softmax(logits, dim=-1), targets)
         acc1 = self.top1(logits, targets)
         acc5 = self.top5(logits, targets)
-        self.log("TRAIN LOSS", loss, prog_bar=True)
-        self.log("TRAIN TOP1 ACC", acc1, prog_bar=True)
-        self.log("TRAIN TOP5 ACC", acc5, prog_bar=True)
+        self.log("TRAIN LOSS", loss)
+        self.log("TRAIN TOP1 ACC", acc1)
+        self.log("TRAIN TOP5 ACC", acc5)
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -182,22 +181,13 @@ class VGG(pl.LightningModule):
         images, targets = batch
         logits = self(images)
         loss = self.loss(logits, targets)
-        # preds = torch.argmax(logits, dim=1)
         acc1 = self.top1(logits, targets)
         acc5 = self.top5(logits, targets)
-        self.log(
-            f"{prefix} LOSS",
-            loss,
-            prog_bar=True,
-        )
-        self.log(
-            f"{prefix} TOP1 ACC",
-            acc1,
-            prog_bar=True,
-        )
-        self.log(
-            f"{prefix} TOP5 ACC",
-            acc5,
-            prog_bar=True,
+        self.log_dict(
+            {
+                f"{prefix} LOSS": loss,
+                f"{prefix} TOP1 ACC": acc1,
+                f"{prefix} TOP5 ACC": acc5,
+            }
         )
         return loss
