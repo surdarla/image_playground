@@ -157,7 +157,9 @@ class VGG(pl.LightningModule):
         #     self.parameters(), lr=0.01, momentum=0.9, weight_decay=5e-4
         # )
         # lr_scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=5)
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
+        optimizer = torch.optim.Adam(
+            self.parameters(), lr=(self.lr or self.learning_rate)
+        )
         return {
             "optimizer": optimizer,
             # "lr_scheduler": lr_scheduler,
@@ -191,7 +193,7 @@ class VGG(pl.LightningModule):
         acc1 = self.top1(logits, targets)
         acc5 = self.top5(logits, targets)
         self.log(
-            f"{prefix}_LOSS",
+            f"{prefix} LOSS",
             loss,
             on_step=False,
             on_epoch=True,
@@ -199,7 +201,7 @@ class VGG(pl.LightningModule):
             logger=True,
         )
         self.log(
-            f"{prefix}_TOP1 ACC",
+            f"{prefix} TOP1 ACC",
             acc1,
             on_step=False,
             on_epoch=True,
@@ -207,7 +209,7 @@ class VGG(pl.LightningModule):
             logger=True,
         )
         self.log(
-            f"{prefix}_TOP5 ACC",
+            f"{prefix} TOP5 ACC",
             acc5,
             on_step=False,
             on_epoch=True,

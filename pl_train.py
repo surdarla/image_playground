@@ -30,14 +30,14 @@ trainer = pl.Trainer(
     # auto_scale_batch_size=True,
     devices=1 if torch.cuda.is_available() else None,  # limiting got iPython runs
     logger=wandb_logger,
-    log_every_n_steps=50,
+    # log_every_n_steps=50,
     callbacks=[
         EarlyStopping(monitor="VALID LOSS", mode="min", patience=5, verbose=True),
         LearningRateMonitor(logging_interval="step"),
         TQDMProgressBar(refresh_rate=50),
     ],
 )
-trainer.tune(model, cifar)
+trainer.tune(model)
 trainer.fit(model, cifar)
 trainer.test(model, cifar)
 trainer.save_checkpoint(CFG.pth_dir, f"{CFG.MODEL}.pth")
