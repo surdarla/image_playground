@@ -9,7 +9,7 @@ from torch.nn import functional as F
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import pytorch_lightning as pl
 import deepspeed
-from deepspeed.ops.adam import FusedAdam
+from deepspeed.ops.adam import FusedAdam, DeepSpeedCPUAdam
 
 # from https://arxiv.org/pdf/1409.1556.pdf
 # https://deep-learning-study.tistory.com/521
@@ -171,13 +171,7 @@ class VGG(pl.LightningModule):
         #     "monitor": "VALID LOSS",
         # }
         # return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
-        optimizer = FusedAdam(self.parameters())
-        lr_scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=5)
-        return {
-            "optimizer": optimizer,
-            "lr_scheduler": lr_scheduler,
-            "monitor": "VALID LOSS",
-        }
+        return DeepSpeedCPUAdam(self.parameters())
 
     def training_step(self, batch, batch_idx):
         images, targets = batch
