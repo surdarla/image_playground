@@ -52,7 +52,7 @@ trainer = pl.Trainer(
     #     # nvme_path="/mnt/nvme",
     # ),
     strategy="deepspeed_stage_2_offload",
-    precision=16,
+    # precision=16,
 )
 
 # getting new_lr from auto_lr_finder
