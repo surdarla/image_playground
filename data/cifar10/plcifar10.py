@@ -13,6 +13,8 @@ import numpy as np
 from config import CFG
 from utils import mysplit
 
+stats = ((0.4914, 0.4822, 0.4465), (0.2022, 0.1994, 0.2009))
+
 
 def prepare_imgs_and_targets(data_dir, train=True):
     """_summary_
@@ -121,7 +123,7 @@ class CIFAR10Data(pl.LightningDataModule):
                         torchvision.transforms.RandomCrop(32, padding=4),
                         torchvision.transforms.RandomHorizontalFlip(),
                         torchvision.transforms.ToTensor(),
-                        # cifar10_normalization(),
+                        torchvision.transforms.Normalize(*stats),
                     ]
                 ),
             )
@@ -131,7 +133,7 @@ class CIFAR10Data(pl.LightningDataModule):
                 transform=transforms.Compose(
                     [
                         torchvision.transforms.ToTensor(),
-                        # cifar10_normalization(),
+                        torchvision.transforms.Normalize(*stats),
                     ]
                 ),
             )
@@ -143,7 +145,7 @@ class CIFAR10Data(pl.LightningDataModule):
                 transform=transforms.Compose(
                     [
                         torchvision.transforms.ToTensor(),
-                        # cifar10_normalization(),
+                        torchvision.transforms.Normalize(*stats),
                     ]
                 ),
             )

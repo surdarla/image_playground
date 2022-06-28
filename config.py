@@ -1,4 +1,5 @@
 """docstring for CFG"""
+import os
 
 
 class CFG:
@@ -10,12 +11,12 @@ class CFG:
     pth_dir = "/pth"
     fold = 5
     n_split = 5
-    num_workers = 2
+    num_workers = int(os.cpu_count() / 2)
 
     MODEL = "vgg"
     amp = True
     print_freq = 100
-    batch_size = 128
+    batch_size = 1024
     image_size = 32
     epochs = 30
     patience = 3

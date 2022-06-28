@@ -72,6 +72,6 @@ trainer = pl.Trainer(
 
 # trainer.tune(model, datamodule=cifar)
 trainer.fit(model, cifar)
-trainer.test(model, cifar)
+trainer.test(model, datamodule=cifar)
 trainer.save_checkpoint(CFG.pth_dir, f"{CFG.MODEL}.pth")
 wandb.finish()
