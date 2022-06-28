@@ -168,8 +168,10 @@ class VGG(pl.LightningModule):
         images, targets = batch
         logits = self(images)
         loss = self.loss(logits, targets)
-        acc1 = self.top1(F.softmax(logits, dim=-1), targets)
-        acc5 = self.top5(F.softmax(logits, dim=-1), targets)
+        # acc1 = self.top1(F.softmax(logits, dim=-1), targets)
+        # acc5 = self.top5(F.softmax(logits, dim=-1), targets)
+        acc1 = self.top1(logits, targets)
+        acc5 = self.top5(logits, targets)
         self.log("TRAIN LOSS", loss, on_epoch=True, prog_bar=True, logger=True)
         self.log("TRAIN TOP1 ACC", acc1, on_epoch=True, prog_bar=True, logger=True)
         self.log("TRAIN TOP5 ACC", acc5, on_epoch=True, prog_bar=True, logger=True)
@@ -185,9 +187,9 @@ class VGG(pl.LightningModule):
         images, targets = batch
         logits = self(images)
         loss = self.loss(logits, targets)
-        preds = torch.argmax(logits, dim=1)
-        acc1 = self.top1(preds, targets)
-        acc5 = self.top5(preds, targets)
+        # preds = torch.argmax(logits, dim=1)
+        acc1 = self.top1(logits, targets)
+        acc5 = self.top5(logits, targets)
         self.log(
             f"{prefix}_LOSS",
             loss,
