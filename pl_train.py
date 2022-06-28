@@ -5,6 +5,7 @@ from pytorch_lightning.callbacks import LearningRateMonitor
 from pytorch_lightning.callbacks.progress import TQDMProgressBar
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_lightning.loggers import WandbLogger
+from pytorch_lightning.plugins import DeepSpeedPlugin
 import wandb
 
 from data.cifar10.plcifar10 import CIFAR10Data
@@ -38,7 +39,18 @@ trainer = pl.Trainer(
         LearningRateMonitor(logging_interval="step"),
         TQDMProgressBar(refresh_rate=50),
     ],
+    plugins=DeepSpeedPlugin(
+        stage=3,
+        offload_optimizer=True,
+        offload_parameters=True,
+        # remote_device='nvme',
+        # offload_params_device='nvme',
+        # offload_optimizer_device='nvme',
+        # nvme_path="/mnt/nvme",
+    ),
+    precision=16,
 )
+
 # getting new_lr from auto_lr_finder
 # lr_finder = trainer.tuner.lr_find(
 #     model,

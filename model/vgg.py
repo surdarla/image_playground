@@ -8,6 +8,7 @@ from torch.nn import functional as F
 
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import pytorch_lightning as pl
+from deepspeed.ops.adam import FusedAdam
 
 # from https://arxiv.org/pdf/1409.1556.pdf
 # https://deep-learning-study.tistory.com/521
@@ -153,16 +154,23 @@ class VGG(pl.LightningModule):
         return out
 
     def configure_optimizers(self):
-        optimizer = torch.optim.SGD(
-            self.parameters(), lr=self.learning_rate, momentum=0.9, weight_decay=5e-4
-        )
+        # optimizer = torch.optim.SGD(
+        #     self.parameters(), lr=self.learning_rate, momentum=0.9, weight_decay=5e-4
+        # )
+        # lr_scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=5)
+        # return {
+        #     "optimizer": optimizer,
+        #     "lr_scheduler": lr_scheduler,
+        #     "monitor": "VALID LOSS",
+        # }
+        # return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
+        optimizer = FusedAdam(self.parameters())
         lr_scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=5)
         return {
             "optimizer": optimizer,
             "lr_scheduler": lr_scheduler,
             "monitor": "VALID LOSS",
         }
-        # return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
 
     def training_step(self, batch, batch_idx):
         images, targets = batch
