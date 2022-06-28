@@ -75,7 +75,7 @@ class VGG(pl.LightningModule):
         init_weight: bool = True,
         dropout: float = 0.5,
         batch_norm: Optional[bool] = True,
-        learning_rate: float = 0.00001,
+        learning_rate: Optional[float] = 0.01,
     ) -> None:
         super().__init__()
         self.loss = nn.CrossEntropyLoss()
@@ -154,7 +154,7 @@ class VGG(pl.LightningModule):
 
     def configure_optimizers(self):
         optimizer = torch.optim.SGD(
-            self.parameters(), lr=0.01, momentum=0.9, weight_decay=5e-4
+            self.parameters(), lr=self.learning_rate, momentum=0.9, weight_decay=5e-4
         )
         lr_scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=5)
         return {optimizer: optimizer, lr_scheduler: lr_scheduler}
