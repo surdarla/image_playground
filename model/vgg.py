@@ -157,7 +157,11 @@ class VGG(pl.LightningModule):
             self.parameters(), lr=self.learning_rate, momentum=0.9, weight_decay=5e-4
         )
         lr_scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=5)
-        return {"optimizer": optimizer, "lr_scheduler": lr_scheduler}
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": lr_scheduler,
+            "monitor": "VALID LOSS",
+        }
         # return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
 
     def training_step(self, batch, batch_idx):
