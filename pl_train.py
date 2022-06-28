@@ -1,8 +1,9 @@
 """import modules and libraries"""
 import torch
 import pytorch_lightning as pl
-from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_lightning.callbacks import LearningRateMonitor
+from pytorch_lightning.callbacks.progress import TQDMProgressBar
+from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_lightning.loggers import WandbLogger
 import wandb
 
@@ -15,6 +16,7 @@ wandb.login(key=CFG.wandb_key)
 cifar = CIFAR10Data(CFG.data_dir, CFG.batch_size, 0)
 cifar.prepare_data()
 cifar.setup(stage="fit")
+
 if CFG.MODEL is "alexnet":
     model = AlexNetLit(10, lr=CFG.min_lr)
 elif CFG.MODEL is "vgg":
@@ -32,8 +34,10 @@ trainer = pl.Trainer(
     callbacks=[
         EarlyStopping(monitor="VALID LOSS", mode="min", patience=5, verbose=True),
         LearningRateMonitor(logging_interval="step"),
+        TQDMProgressBar(refresh_rate=50),
     ],
 )
+trainer.tune(model, cifar)
 trainer.fit(model, cifar)
 trainer.test(model, cifar)
 trainer.save_checkpoint(CFG.pth_dir, f"{CFG.MODEL}.pth")
