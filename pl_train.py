@@ -20,7 +20,7 @@ cifar.setup(stage="fit")
 if CFG.MODEL is "alexnet":
     model = AlexNetLit(10, lr=CFG.min_lr)
 elif CFG.MODEL is "vgg":
-    model = VGG("VGG13", learning_rate=CFG.min_lr)
+    model = VGG("VGG13")
 wandb_logger = WandbLogger(name="test1", project="image_playground")
 pl.seed_everything(43)
 trainer = pl.Trainer(
@@ -39,7 +39,8 @@ trainer = pl.Trainer(
         TQDMProgressBar(refresh_rate=50),
     ],
 )
-trainer.tune(model, datamodule=cifar)
+# trainer.tune(model, datamodule=cifar)
+trainer.tune(model)
 trainer.fit(model, cifar)
 trainer.test(model, cifar)
 trainer.save_checkpoint(CFG.pth_dir, f"{CFG.MODEL}.pth")
