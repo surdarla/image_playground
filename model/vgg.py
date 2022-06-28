@@ -1,10 +1,12 @@
 """import modules for vgg"""
+# pylint: disable=W0221, W0613, W0201, E1101
 from typing import Union, List, Dict, cast, Optional
 import torchmetrics
 import torch
 from torch import nn
 from torch.nn import functional as F
-from torch.optim.lr_scheduler import ReduceLROnPlateau
+
+# from torch.optim.lr_scheduler import ReduceLROnPlateau
 import pytorch_lightning as pl
 
 # from https://arxiv.org/pdf/1409.1556.pdf
@@ -73,10 +75,12 @@ class VGG(pl.LightningModule):
         init_weight: bool = True,
         dropout: float = 0.5,
         batch_norm: Optional[bool] = True,
+        learning_rate: float = 0.00001,
     ) -> None:
         super().__init__()
         self.loss = nn.CrossEntropyLoss()
         self.save_hyperparameters()
+        self.learning_rate = learning_rate
         self.train_acc = torchmetrics.Accuracy()
         self.valid_acc = torchmetrics.Accuracy()
         self.test_acc = torchmetrics.Accuracy()
@@ -150,13 +154,14 @@ class VGG(pl.LightningModule):
         return out
 
     def configure_optimizers(self):
-        optimizer = torch.optim.SGD(
-            self.parameters(), lr=0.01, momentum=0.9, weight_decay=5e-4
-        )
-        lr_scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=5)
+        # optimizer = torch.optim.SGD(
+        #     self.parameters(), lr=0.01, momentum=0.9, weight_decay=5e-4
+        # )
+        # lr_scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=5)
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
         return {
             "optimizer": optimizer,
-            "lr_scheduler": lr_scheduler,
+            # "lr_scheduler": lr_scheduler,
             "monitor": "VALID LOSS",
         }
 

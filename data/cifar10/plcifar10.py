@@ -1,4 +1,5 @@
 """modules for pytroch-lighting cifar10"""
+# pylint: disable=W0201
 import os
 import pickle
 from typing import Optional
@@ -56,10 +57,11 @@ def prepare_imgs_and_targets(data_dir, train=True):
 
 
 class MyDataset(Dataset):
-    """_summary_
+    """Classic Dataset with img and target
 
     Args:
-        Dataset (_type_): _description_
+        Dataset (_type_): Cifar10 dataset
+        if using albumentation, use the part that is annotated
     """
 
     def __init__(self, imgs, targets, transform):
@@ -71,7 +73,7 @@ class MyDataset(Dataset):
         img, target = self.imgs[index], self.targets[index]
         img = Image.fromarray(img)
         img = self.transform(img)
-        # if self.transform is not None: ## when albumentation
+        # if self.transform is not None:
         #     img = self.transform(image=img)["image"]
         return img, target
 
@@ -80,10 +82,13 @@ class MyDataset(Dataset):
 
 
 class CIFAR10Data(pl.LightningDataModule):
-    """_summary_
+    """Pytorch lightning cifar10 datamodule
 
     Args:
-        pl (_type_): _description_ out
+        root(str): path of data directory
+        batch_size(int): batch size
+        this_fold(int): fold number
+        transform(callable, optional): transform function. Defaults to None.
     """
 
     def __init__(
