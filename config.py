@@ -1,22 +1,24 @@
 """docstring for CFG"""
+import os
 
 
 class CFG:
     """_summary_"""
 
+    wandb_key = "93460ff86561b201141546a407885ba3c8318d81"
     seed = 43
     data_dir = "./data/cifar10"
-    pth_dir = "./pth"
+    pth_dir = "/pth"
     fold = 5
     n_split = 5
-    num_workers = 2
+    num_workers = int(os.cpu_count() / 2)
 
-    MODEL = "final"
+    MODEL = "vgg"
     amp = True
     print_freq = 100
-    batch_size = 128
-    image_size = 128
-    epochs = 10
+    batch_size = 1024
+    image_size = 32
+    epochs = 30
     patience = 3
 
     accum_iter = 1

@@ -1,3 +1,5 @@
+"""Import libraries for augmix"""
+# pylint: disable=E1136, C0103
 # https://www.kaggle.com/code/haqishen/augmix-based-on-albumentations/notebook
 import numpy as np
 from PIL import Image, ImageOps, ImageEnhance
@@ -29,23 +31,28 @@ def float_parameter(level, maxval):
 
 
 def sample_level(n):
+    """sample level"""
     return np.random.uniform(low=0.1, high=n)
 
 
 def autocontrast(pil_img, _):
+    """autocontrast"""
     return ImageOps.autocontrast(pil_img)
 
 
 def equalize(pil_img, _):
+    """equalize"""
     return ImageOps.equalize(pil_img)
 
 
 def posterize(pil_img, level):
+    """posterize"""
     level = int_parameter(sample_level(level), 4)
     return ImageOps.posterize(pil_img, 4 - level)
 
 
 def rotate(pil_img, level):
+    """rotate"""
     degrees = int_parameter(sample_level(level), 30)
     if np.random.uniform() > 0.5:
         degrees = -degrees
@@ -53,11 +60,13 @@ def rotate(pil_img, level):
 
 
 def solarize(pil_img, level):
+    """solarize"""
     level = int_parameter(sample_level(level), 256)
     return ImageOps.solarize(pil_img, 256 - level)
 
 
 def shear_x(pil_img, level):
+    """shear_x 털을 깎다는 의미"""
     level = float_parameter(sample_level(level), 0.3)
     if np.random.uniform() > 0.5:
         level = -level
@@ -67,6 +76,7 @@ def shear_x(pil_img, level):
 
 
 def shear_y(pil_img, level):
+    """shear_y"""
     level = float_parameter(sample_level(level), 0.3)
     if np.random.uniform() > 0.5:
         level = -level
@@ -76,6 +86,7 @@ def shear_y(pil_img, level):
 
 
 def translate_x(pil_img, level):
+    """translate_"""
     level = int_parameter(sample_level(level), pil_img.size[0] / 3)
     if np.random.random() > 0.5:
         level = -level
@@ -85,6 +96,7 @@ def translate_x(pil_img, level):
 
 
 def translate_y(pil_img, level):
+    """translate_y"""
     level = int_parameter(sample_level(level), pil_img.size[0] / 3)
     if np.random.random() > 0.5:
         level = -level
@@ -95,24 +107,28 @@ def translate_y(pil_img, level):
 
 # operation that overlaps with ImageNet-C's test set
 def color(pil_img, level):
+    """color"""
     level = float_parameter(sample_level(level), 1.8) + 0.1
     return ImageEnhance.Color(pil_img).enhance(level)
 
 
 # operation that overlaps with ImageNet-C's test set
 def contrast(pil_img, level):
+    """contrast"""
     level = float_parameter(sample_level(level), 1.8) + 0.1
     return ImageEnhance.Contrast(pil_img).enhance(level)
 
 
 # operation that overlaps with ImageNet-C's test set
 def brightness(pil_img, level):
+    """brightness"""
     level = float_parameter(sample_level(level), 1.8) + 0.1
     return ImageEnhance.Brightness(pil_img).enhance(level)
 
 
 # operation that overlaps with ImageNet-C's test set
 def sharpness(pil_img, level):
+    """shapness"""
     level = float_parameter(sample_level(level), 1.8) + 0.1
     return ImageEnhance.Sharpness(pil_img).enhance(level)
 
@@ -147,6 +163,7 @@ augmentations_all = [
 
 
 def apply_op(image, op, severity):
+    """apply operation"""
     #   image = np.clip(image, 0, 255)
     pil_img = Image.fromarray(image)  # Convert to PIL.Image
     pil_img = op(pil_img, severity)
@@ -196,8 +213,8 @@ class RandomAugMix(ImageOnlyTransform):
         self.depth = depth
         self.alpha = alpha
 
-    def apply(self, image, **params):
+    def apply(self, img, **params):
         augmixed_image = augment_and_mix(
-            image, self.severity, self.width, self.depth, self.alpha
+            img, self.severity, self.width, self.depth, self.alpha
         )
         return augmixed_image

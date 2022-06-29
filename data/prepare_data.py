@@ -2,6 +2,7 @@
 import os
 import pickle
 import numpy as np
+from PIL import Image
 from torch.utils.data import Dataset
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
@@ -99,10 +100,10 @@ class MyDataset(Dataset):
 
     def __getitem__(self, index):
         img, target = self.imgs[index], self.targets[index]
-        # img = Image.fromarray(img)
-        # img = self.transform(img)
-        if self.transform is not None:
-            img = self.transform(image=img)["image"]
+        img = Image.fromarray(img)
+        img = self.transform(img)
+        # if self.transform is not None: ## when albumentation
+        #     img = self.transform(image=img)["image"]
         return img, target
 
     def __len__(self):
