@@ -65,14 +65,18 @@ class VGG(nn.Module):
 
     def __init__(
         self,
-        model: str = "VGG19",
+        model_name: str = "VGG19",
         num_classes: int = 10,
         init_weight: bool = True,
         dropout_rate: float = 0.5,
         batch_norm: Optional[bool] = True,
+        in_cfgs=cfgs.copy(),
     ) -> None:
         super().__init__()
-        self.conv_layers = self._make_layers(cfgs[model], batch_norm=batch_norm)
+        self.in_cfgs = in_cfgs
+        self.conv_layers = self._make_layers(
+            self.in_cfgs[model_name], batch_norm=batch_norm
+        )
         self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
         self.classifier = nn.Sequential(
             nn.Linear(512 * 7 * 7, 4096),

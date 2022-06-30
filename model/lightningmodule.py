@@ -9,29 +9,17 @@ import pytorch_lightning as pl
 import torchmetrics
 from deepspeed.ops.adam import DeepSpeedCPUAdam
 
-from .alexnet import AlexNet
-from .vgg import VGG
-
 
 class MyModule(pl.LightningModule):
     """lightning module"""
 
     def __init__(
         self,
+        model,
         args: dict,
     ) -> None:
         super().__init__()
-        # self.args = args
-        if args.model_name == "alexnet":
-            self.model = AlexNet(args.num_classes, args.dropout_rate)
-        elif args.model_name.startswith("vgg"):
-            self.model = VGG(
-                args.model_name,
-                args.num_classes,
-                args.init_weight,
-                args.dropout_rate,
-                args.batch_norm,
-            )
+        self.model = model
         self.learning_rate = args.lr
         self.save_hyperparameters()
         self.loss = nn.CrossEntropyLoss()

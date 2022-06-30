@@ -14,6 +14,8 @@ import wandb
 
 from data.cifar10.plcifar10 import CIFAR10Data
 from model.lightningmodule import MyModule
+from model.alexnet import AlexNet
+from model.vgg import VGG
 
 
 def main(args):
@@ -29,7 +31,19 @@ def main(args):
     cifar.prepare_data()
     cifar.setup(stage="fit")
 
-    model = MyModule(args)
+    if args.model_name == "alexnet":
+        model = AlexNet(args.num_classes, args.dropout_rate)
+    elif args.model_name.startswith("VGG"):
+        model = VGG(
+            args.model_name,
+            args.num_classes,
+            args.init_weight,
+            args.dropout_rate,
+            args.batch_norm,
+        )
+
+    # dict_args = vars(args)
+    lit_model = MyModule(model, args)
 
     pl.seed_everything(43)
     trainer = pl.Trainer(
@@ -77,9 +91,9 @@ def main(args):
     # model.hparams.lr = new_lr
 
     # trainer.tune(model, datamodule=cifar)
-    trainer.fit(model, cifar)
+    trainer.fit(lit_model, cifar)
     cifar.setup(stage="test")
-    trainer.test(model, datamodule=cifar)
+    trainer.test(lit_model, datamodule=cifar)
     trainer.save_checkpoint(args.pth_dir, f"{args.model_name}.pth")
     wandb.finish()
 
@@ -99,7 +113,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--model_name",
-        default="alexnet",
+        default="VGG19",
         type=str,
         help="alexnet|VGG11|VGG13|VGG16|VGG19|googlenet|resnet(default:alexnet)",
     )

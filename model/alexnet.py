@@ -13,7 +13,6 @@ class AlexNet(nn.Module):
 
     def __init__(
         self,
-        model: str,
         num_classes: int = 10,
         dropout_rate: float = 0.5,
     ) -> None:
