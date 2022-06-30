@@ -101,7 +101,7 @@ if __name__ == "__main__":
         "--model_name",
         default="alexnet",
         type=str,
-        help="alexnet|vgg11|vgg13|vgg16|vgg19|googlenet|resnet(default:alexnet)",
+        help="alexnet|VGG11|VGG13|VGG16|VGG19|googlenet|resnet(default:alexnet)",
     )
     parser.add_argument(
         "--num_classes", default=10, type=int, help="number of classes(default:10)"
