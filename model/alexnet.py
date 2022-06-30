@@ -41,7 +41,7 @@ class AlexNet(nn.Module):
             nn.Dropout(p=dropout_rate),
             nn.Linear(4096, 4096),
             nn.ReLU(inplace=True),
-            nn.Linear(4096, num_classes),
+            nn.Linear(4096, 10),
         )
 
     def forward(self, x_input: torch.Tensor) -> torch.Tensor:

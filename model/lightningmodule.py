@@ -31,6 +31,7 @@ class MyModule(pl.LightningModule):
                 args.dropout_rate,
                 args.batch_norm,
             )
+        self.learning_rate = args.lr
         self.save_hyperparameters()
         self.loss = nn.CrossEntropyLoss()
         self.top1 = torchmetrics.Accuracy()
