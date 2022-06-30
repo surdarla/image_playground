@@ -43,7 +43,7 @@ class MyModule(pl.LightningModule):
         return self.model(first)
 
     def configure_optimizers(self):
-        optimizer = DeepSpeedCPUAdam(self.parameters(), lr=self.hparams.lr)
+        optimizer = DeepSpeedCPUAdam(self.parameters(), lr=self.learning_rate)
         lr_scheduler = ReduceLROnPlateau(
             optimizer, factor=0.1, patience=self.args.patience
         )
