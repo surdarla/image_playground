@@ -20,6 +20,7 @@ class MyModule(pl.LightningModule):
     ) -> None:
         super().__init__()
         self.model = model
+        self.args = args
         self.learning_rate = args.lr
         self.save_hyperparameters()
         self.loss = nn.CrossEntropyLoss()
