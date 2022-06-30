@@ -80,7 +80,7 @@ def main(args):
     trainer.fit(model, cifar)
     cifar.setup(stage="test")
     trainer.test(model, datamodule=cifar)
-    trainer.save_checkpoint(args.pth_dir, f"{args.MODEL}.pth")
+    trainer.save_checkpoint(args.pth_dir, f"{args.model_name}.pth")
     wandb.finish()
 
 
@@ -112,6 +112,7 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", default=-1, type=int)
     parser.add_argument("--image_size", default=32, type=int)
     parser.add_argument("--fold", default=0, type=int)
+    parser.add_argument("--init_weight", default=True, type=bool)
     parser.add_argument("--dropout_rate", default=0.5, type=float)
     parser.add_argument("--lr", default=0.01, type=float)
     parser.add_argument("--patience", default=3, type=int)
