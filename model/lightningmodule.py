@@ -24,7 +24,7 @@ class MyModule(pl.LightningModule):
         # self.args = args
         if args.model_name == "alexnet":
             self.model = AlexNet(args.num_classes, args.dropout_rate)
-        elif args.model_name == "vgg":
+        elif args.model_name.startswith("vgg"):
             self.model = VGG(
                 args.model_name,
                 args.num_classes,
