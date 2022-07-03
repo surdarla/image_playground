@@ -10,7 +10,6 @@ import torchvision
 from torchvision import transforms
 import numpy as np
 
-from config import CFG
 from utils import mysplit
 
 stats = ((0.4914, 0.4822, 0.4465), (0.2022, 0.1994, 0.2009))
@@ -99,12 +98,18 @@ class CIFAR10Data(pl.LightningDataModule):
         batch_size: int,
         this_fold: int,
         transform: Optional[callable] = None,
+        seed: int = 43,
+        n_split: int = 5,
+        num_workers: int = 4,
     ) -> None:
         super().__init__()
         self.root = root
         self.batch_size = batch_size
         self.this_fold = this_fold
+        self.seed = seed
+        self.n_split = n_split
         self.transform = transform
+        self.num_workers = num_workers
 
     def prepare_data(self) -> None:
         pass  # already downloaded
@@ -113,7 +118,7 @@ class CIFAR10Data(pl.LightningDataModule):
         if stage == "fit":
             image, target = prepare_imgs_and_targets(self.root, train=True)
             img_train, img_valid, target_train, target_valid = mysplit(
-                image, target, self.this_fold, CFG.n_split, CFG.seed
+                image, target, self.this_fold, self.n_split, self.seed
             )
             self.trainset = MyDataset(
                 img_train,
@@ -155,7 +160,7 @@ class CIFAR10Data(pl.LightningDataModule):
             self.trainset,
             batch_size=self.batch_size,
             shuffle=True,
-            num_workers=CFG.num_workers,
+            num_workers=self.num_workers,
             drop_last=False,
         )
         return cifar_train
@@ -165,7 +170,7 @@ class CIFAR10Data(pl.LightningDataModule):
             self.validset,
             batch_size=10 * self.batch_size,
             shuffle=False,
-            num_workers=CFG.num_workers,
+            num_workers=self.num_workers,
             drop_last=False,
         )
         return cifar_valid
@@ -175,7 +180,7 @@ class CIFAR10Data(pl.LightningDataModule):
             self.testset,
             batch_size=10 * self.batch_size,
             shuffle=False,
-            num_workers=CFG.num_workers,
+            num_workers=self.num_workers,
             drop_last=False,
         )
         return cifar_test

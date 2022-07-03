@@ -16,6 +16,7 @@ from data.cifar10.plcifar10 import CIFAR10Data
 from model.lightningmodule import MyModule
 from model.alexnet import AlexNet
 from model.vgg import VGG
+from model.googlenet import GoogLeNet
 
 
 def main(args):
@@ -27,7 +28,11 @@ def main(args):
     )
 
     # getting data
-    cifar = CIFAR10Data(args.data_dir, args.batch_size, args.fold)
+    cifar = CIFAR10Data(
+        root=args.data_dir,
+        batch_size=args.batch_size,
+        this_fold=args.fold,
+    )
     cifar.prepare_data()
     cifar.setup(stage="fit")
 
@@ -41,6 +46,10 @@ def main(args):
             args.dropout_rate,
             args.batch_norm,
         )
+    elif args.model_name == "googlenet":
+        model = GoogLeNet(
+            num_classes=args.num_classes,
+        )
 
     # dict_args = vars(args)
     lit_model = MyModule(model, args)
@@ -50,7 +59,8 @@ def main(args):
         # max_epochs=100, # max_epochs=-1
         accelerator="auto",
         # auto_lr_find=True,
-        # auto_scale_batch_size="binsearch",
+        # auto_scale_batch_size="binsearch", # not compatible with deepspeed
+        ## for grad accum
         # accumulate_grad_batches={0: 8, 4: 4, 8: 1},
         gradient_clip_val=0.5,
         # gradient_clip_algorithm="value",
@@ -62,17 +72,8 @@ def main(args):
             LearningRateMonitor(logging_interval="step"),
             TQDMProgressBar(refresh_rate=50),
         ],
-        # strategy=DeepSpeedStrategy(
-        #     stage=3,
-        #     offload_optimizer=True,
-        #     offload_parameters=True,
-        #     # remote_device='nvme',
-        #     # offload_params_device='nvme',
-        #     # offload_optimizer_device='nvme',
-        #     # nvme_path="/mnt/nvme",
-        # ),
         strategy="deepspeed_stage_2_offload",
-        # precision=16,
+        precision=16,
     )
 
     # getting new_lr from auto_lr_finder
@@ -113,7 +114,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--model_name",
-        default="VGG19",
+        default="googlenet",
         type=str,
         help="alexnet|VGG11|VGG13|VGG16|VGG19|googlenet|resnet(default:alexnet)",
     )
@@ -130,6 +131,8 @@ if __name__ == "__main__":
     parser.add_argument("--dropout_rate", default=0.5, type=float)
     parser.add_argument("--lr", default=0.01, type=float)
     parser.add_argument("--patience", default=3, type=int)
+    parser.add_argument("--n_splits", default=5, type=int)
+    parser.add_argument("--num_workers", default=2, type=int)
     # wandb config
     parser.add_argument(
         "--wandb_key", default="93460ff86561b201141546a407885ba3c8318d81", type=str
