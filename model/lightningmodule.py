@@ -56,7 +56,15 @@ class MyModule(pl.LightningModule):
         }
 
     def training_step(self, batch, batch_idx):
-        self._shared_eval(batch, batch_idx, "TRAIN")
+        images, targets = batch
+        logits = self.forward(images)
+        loss = self.loss(logits, targets)
+        acc1 = self.top1(logits, targets)
+        acc5 = self.top5(logits, targets)
+        self.log("TRAIN LOSS", loss)
+        self.log("TRAIN TOP1 ACC", acc1)
+        self.log("TRAIN TOP5 ACC", acc5)
+        return loss
 
     def validation_step(self, batch, batch_idx):
         self._shared_eval(batch, batch_idx, "VALID")
