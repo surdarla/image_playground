@@ -117,7 +117,7 @@ if __name__ == "__main__":
     parser.add_argument("--patience", default=3, type=int)
     parser.add_argument("--n_splits", default=5, type=int)
     parser.add_argument("--num_workers", default=2, type=int)
-    parser.add_argument("--fp16", default=True, type=bool)
+    parser.add_argument("--fp16", action=argparse.BooleanOptionalAction)
     # wandb config
     parser.add_argument(
         "--wandb_key", default="93460ff86561b201141546a407885ba3c8318d81", type=str
