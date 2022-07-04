@@ -45,7 +45,6 @@ class MyModule(pl.LightningModule):
                 "scheduler": torch.optim.lr_scheduler.OneCycleLR(
                     optimizer,
                     max_lr=self.learning_rate,
-                    verbose=True,
                     total_steps=48000 // self.args.batch_size * self.args.epochs,
                 ),
                 "interval": "step",
