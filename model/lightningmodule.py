@@ -37,7 +37,7 @@ class MyModule(pl.LightningModule):
         # optimizer = DeepSpeedCPUAdam(self.parameters(), lr=self.learning_rate)
         # optimizer = FusedAdam(self.parameters(), lr=self.learning_rate)
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.learning_rate)
-        lr_scheduler = torch.optim.lr_scheduler.oneCycleLR(
+        lr_scheduler = torch.optim.lr_scheduler.OneCycleLR(
             optimizer, max_lr=self.learning_rate, verbose=True
         )
         # lr_scheduler = ReduceLROnPlateau(

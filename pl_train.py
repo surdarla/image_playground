@@ -83,7 +83,7 @@ def main(args):
         lit_model, mode="binsearch", init_val=128, max_trials=3, datamodule=cifar
     )
     lit_model.hparams.batch_size = new_batch_size
-    trainer.tune(lit_model, datamodule=cifar)
+    # trainer.tune(lit_model, datamodule=cifar)
     trainer.fit(lit_model, cifar)
     cifar.setup(stage="test")
     trainer.test(lit_model, datamodule=cifar)
