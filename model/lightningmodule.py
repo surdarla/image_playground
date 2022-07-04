@@ -35,7 +35,8 @@ class MyModule(pl.LightningModule):
     # https://deepspeed.readthedocs.io/en/stable/optimizers.html
     def configure_optimizers(self):
         # optimizer = DeepSpeedCPUAdam(self.parameters(), lr=self.learning_rate)
-        optimizer = FusedAdam(self.parameters(), lr=self.learning_rate)
+        # optimizer = FusedAdam(self.parameters(), lr=self.learning_rate)
+        optimizer = torch.optim.AdamW(self.parameters(), lr=self.learning_rate)
         # lr_scheduler = ReduceLROnPlateau(
         #     optimizer, factor=0.1, patience=self.args.patience
         # )

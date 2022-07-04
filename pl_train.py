@@ -60,12 +60,12 @@ def main(args):
     trainer = pl.Trainer(
         # max_epochs=100, # max_epochs=-1
         accelerator="gpu",
-        # auto_lr_find=True,
-        # auto_scale_batch_size="binsearch", # not compatible with deepspeed
+        auto_lr_find=True,
+        auto_scale_batch_size="binsearch",  # not compatible with deepspeed
         ## for grad accum
-        # accumulate_grad_batches={0: 8, 4: 4, 8: 1},
+        accumulate_grad_batches={0: 8, 4: 4, 8: 1},
         gradient_clip_val=0.5,
-        # gradient_clip_algorithm="value",
+        gradient_clip_algorithm="value",
         detect_anomaly=True,
         devices=1 if torch.cuda.is_available() else None,  # limiting got iPython runs
         logger=wandb_logger,
@@ -75,9 +75,10 @@ def main(args):
             TQDMProgressBar(refresh_rate=50),
         ],
         # strategy="deepspeed_stage_2_offload",
-        strategy="deepspeed_stage_3",
+        # strategy="deepspeed_stage_3",
         precision=16 if args.fp16 == 16 else 32,
     )
+    trainer.tune(model, datamodule=cifar)
     trainer.fit(lit_model, cifar)
     cifar.setup(stage="test")
     trainer.test(lit_model, datamodule=cifar)
