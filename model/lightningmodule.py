@@ -38,7 +38,10 @@ class MyModule(pl.LightningModule):
         # optimizer = FusedAdam(self.parameters(), lr=self.learning_rate)
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.learning_rate)
         lr_scheduler = torch.optim.lr_scheduler.OneCycleLR(
-            optimizer, max_lr=0.01, verbose=True, total_steps=1000
+            optimizer,
+            max_lr=self.learning_rate,
+            verbose=True,
+            total_steps=int(48000 // self.args.batch_size * self.args.epochs),
         )
         # lr_scheduler = ReduceLROnPlateau(
         #     optimizer, factor=0.1, patience=self.args.patience

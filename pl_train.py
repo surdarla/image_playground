@@ -62,7 +62,7 @@ def main(args):
         # max_epochs=100, # max_epochs=-1
         accelerator="gpu",
         log_every_n_steps=10,
-        auto_lr_find=True,
+        # auto_lr_find=True,
         auto_scale_batch_size="binsearch",  # not compatible with deepspeed
         accumulate_grad_batches={0: 8, 4: 4, 8: 1},
         gradient_clip_val=0.5,
@@ -85,11 +85,6 @@ def main(args):
         lit_model, mode="binsearch", init_val=128, max_trials=3, datamodule=cifar
     )
     lit_model.hparams.batch_size = new_batch_size
-    # learinig rate finding
-    lr_finder = tuner.lr_find(lit_model, datamodule=cifar)
-    fig = lr_finder.plot(suggest=True)
-    fig.show()
-    lit_model.hparams.learning_rate = lr_finder.suggestion()
 
     # training
     trainer.fit(lit_model, cifar)
