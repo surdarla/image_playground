@@ -41,7 +41,7 @@ class MyModule(pl.LightningModule):
             optimizer,
             max_lr=self.learning_rate,
             verbose=True,
-            total_steps=int(48000 // self.args.batch_size * self.args.epochs),
+            total_steps=self.args.epochs,
         )
         # lr_scheduler = ReduceLROnPlateau(
         #     optimizer, factor=0.1, patience=self.args.patience

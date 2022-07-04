@@ -71,7 +71,12 @@ def main(args):
         devices=1 if torch.cuda.is_available() else None,  # limiting got iPython runs
         logger=wandb_logger,
         callbacks=[
-            EarlyStopping(monitor="VALID LOSS", mode="min", patience=10, verbose=True),
+            EarlyStopping(
+                monitor="VALID LOSS",
+                mode="min",
+                patience=args.patience * 3,
+                verbose=True,
+            ),
             LearningRateMonitor(logging_interval="step"),
             TQDMProgressBar(refresh_rate=50),
         ],
