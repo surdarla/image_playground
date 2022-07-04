@@ -4,6 +4,7 @@ import argparse
 
 import torch
 import pytorch_lightning as pl
+from pytorch_lightning.tuner.tuning import Tuner
 from pytorch_lightning.callbacks import LearningRateMonitor
 from pytorch_lightning.callbacks.progress import TQDMProgressBar
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
@@ -77,6 +78,11 @@ def main(args):
         # strategy="deepspeed_stage_3",
         precision=16 if args.fp16 == 16 else 32,
     )
+    tuner = Tuner(trainer)
+    new_batch_size = tuner.scale_batch_size(
+        lit_model, mode="binsearch", init_val=128, max_trials=3, datamodule=cifar
+    )
+    lit_model.hparams.batch_size = new_batch_size
     trainer.tune(lit_model, datamodule=cifar)
     trainer.fit(lit_model, cifar)
     cifar.setup(stage="test")
