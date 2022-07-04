@@ -37,19 +37,22 @@ class MyModule(pl.LightningModule):
         # optimizer = DeepSpeedCPUAdam(self.parameters(), lr=self.learning_rate)
         # optimizer = FusedAdam(self.parameters(), lr=self.learning_rate)
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.learning_rate)
+        lr_scheduler = torch.optim.lr_scheduler.oneCycleLR(
+            optimizer, max_lr=self.learning_rate, verbose=True
+        )
         # lr_scheduler = ReduceLROnPlateau(
         #     optimizer, factor=0.1, patience=self.args.patience
         # )
         # total_steps = int(48000 // self.args.batch_size * self.args.epochs)
-        lr_scheduler = CosineAnnealingWarmupRestarts(
-            optimizer,
-            first_cycle_steps=10,
-            cycle_mult=0.75,
-            max_lr=self.learning_rate,
-            min_lr=self.learning_rate * 0.01,
-            warmup_steps=1,
-            gamma=0.75,
-        )
+        # lr_scheduler = CosineAnnealingWarmupRestarts(
+        #     optimizer,
+        #     first_cycle_steps=10,
+        #     cycle_mult=0.75,
+        #     max_lr=self.learning_rate,
+        #     min_lr=self.learning_rate,
+        #     warmup_steps=1,
+        #     gamma=0.75,
+        # )
         return {
             "optimizer": optimizer,
             "lr_scheduler": lr_scheduler,
