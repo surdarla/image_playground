@@ -37,12 +37,20 @@ class MyModule(pl.LightningModule):
         # optimizer = DeepSpeedCPUAdam(self.parameters(), lr=self.learning_rate)
         # optimizer = FusedAdam(self.parameters(), lr=self.learning_rate)
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.learning_rate)
-        lr_scheduler = torch.optim.lr_scheduler.OneCycleLR(
-            optimizer,
-            max_lr=self.learning_rate,
-            verbose=True,
-            total_steps=self.args.epochs,
-        )
+        # https://pytorch-lightning.readthedocs.io/en/latest/common/lightning_module.html#configure-optimizers
+        # how to step scheduler in every steps
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": {
+                "scheduler": torch.optim.lr_scheduler.OneCycleLR(
+                    optimizer,
+                    max_lr=self.learning_rate,
+                    verbose=True,
+                    total_steps=48000 // self.batch_size * self.args.epochs,
+                ),
+                "interval": "step",
+            },
+        }
         # lr_scheduler = ReduceLROnPlateau(
         #     optimizer, factor=0.1, patience=self.args.patience
         # )
@@ -56,11 +64,6 @@ class MyModule(pl.LightningModule):
         #     warmup_steps=1,
         #     gamma=0.75,
         # )
-        return {
-            "optimizer": optimizer,
-            "lr_scheduler": lr_scheduler,
-            "monitor": "VALID LOSS",
-        }
 
     def training_step(self, batch, batch_idx):
         images, targets = batch
