@@ -61,7 +61,7 @@ def main(args):
     trainer = pl.Trainer(
         max_epochs=args.epochs,  # max_epochs=-1
         accelerator="gpu",
-        log_every_n_steps=10,
+        log_every_n_steps=5,
         # auto_lr_find=True,
         auto_scale_batch_size="binsearch",  # not compatible with deepspeed
         accumulate_grad_batches={0: 8, 4: 4, 8: 1},
