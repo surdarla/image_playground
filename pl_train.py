@@ -62,7 +62,6 @@ def main(args):
         accelerator="gpu",
         auto_lr_find=True,
         auto_scale_batch_size="binsearch",  # not compatible with deepspeed
-        ## for grad accum
         accumulate_grad_batches={0: 8, 4: 4, 8: 1},
         gradient_clip_val=0.5,
         gradient_clip_algorithm="value",
@@ -78,7 +77,7 @@ def main(args):
         # strategy="deepspeed_stage_3",
         precision=16 if args.fp16 == 16 else 32,
     )
-    trainer.tune(lit_model)
+    trainer.tune(lit_model, datamodule=cifar)
     trainer.fit(lit_model, cifar)
     cifar.setup(stage="test")
     trainer.test(lit_model, datamodule=cifar)
