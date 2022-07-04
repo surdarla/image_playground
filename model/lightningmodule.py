@@ -32,13 +32,14 @@ class MyModule(pl.LightningModule):
         """only for predict and inference"""
         return self.model(first)
 
+    # https://deepspeed.readthedocs.io/en/stable/optimizers.html
     def configure_optimizers(self):
         optimizer = DeepSpeedCPUAdam(self.parameters(), lr=self.learning_rate)
         # optimizer = FusedAdam(self.parameters(), lr=self.learning_rate)
         # lr_scheduler = ReduceLROnPlateau(
         #     optimizer, factor=0.1, patience=self.args.patience
         # )
-        total_steps = len(self.train_loader) // self.args.batch_size * self.args.epochs
+        total_steps = 48000 // self.args.batch_size * self.args.epochs
         my_scheduler_dict = dict(
             first_cycle_steps=total_steps,
             cycle_mult=0.75,
@@ -55,15 +56,7 @@ class MyModule(pl.LightningModule):
         }
 
     def training_step(self, batch, batch_idx):
-        images, targets = batch
-        logits = self.forward(images)
-        loss = self.loss(logits, targets)
-        acc1 = self.top1(logits, targets)
-        acc5 = self.top5(logits, targets)
-        self.log("TRAIN LOSS", loss)
-        self.log("TRAIN TOP1 ACC", acc1)
-        self.log("TRAIN TOP5 ACC", acc5)
-        return loss
+        self._shared_eval(batch, batch_idx, "TRAIN")
 
     def validation_step(self, batch, batch_idx):
         self._shared_eval(batch, batch_idx, "VALID")
