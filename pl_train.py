@@ -87,7 +87,7 @@ def main(args):
     # scale batch size
     tuner = Tuner(trainer)
     new_batch_size = tuner.scale_batch_size(
-        lit_model, mode="binsearch", init_val=128, max_trials=6, datamodule=cifar
+        lit_model, mode="binsearch", init_val=128, max_trials=4, datamodule=cifar
     )
     lit_model.hparams.batch_size = new_batch_size
 
