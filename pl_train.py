@@ -72,26 +72,10 @@ def main(args):
             LearningRateMonitor(logging_interval="step"),
             TQDMProgressBar(refresh_rate=50),
         ],
-        strategy="deepspeed_stage_2_offload",
+        # strategy="deepspeed_stage_2_offload",
+        strategy="deepspeed_stage_3",
         precision=16,
     )
-
-    # getting new_lr from auto_lr_finder
-    # lr_finder = trainer.tuner.lr_find(
-    #     model,
-    #     cifar.train_dataloader(),
-    #     mode="exponential",
-    #     min_lr=1e-6,
-    #     max_lr=1e-3,
-    #     num_training=100,
-    # )
-    # fig = lr_finder.plot(suggest=True)
-    # fig.savefig("/")
-    # new_lr = lr_finder.suggestion()
-    # print(f"Suggested learning rate: {new_lr}")
-    # model.hparams.lr = new_lr
-
-    # trainer.tune(model, datamodule=cifar)
     trainer.fit(lit_model, cifar)
     cifar.setup(stage="test")
     trainer.test(lit_model, datamodule=cifar)

@@ -7,7 +7,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 import pytorch_lightning as pl
 import torchmetrics
-from deepspeed.ops.adam import DeepSpeedCPUAdam
+from deepspeed.ops.adam import DeepSpeedCPUAdam, FusedAdam
 
 
 class MyModule(pl.LightningModule):
@@ -32,7 +32,8 @@ class MyModule(pl.LightningModule):
         return self.model(first)
 
     def configure_optimizers(self):
-        optimizer = DeepSpeedCPUAdam(self.parameters(), lr=self.learning_rate)
+        # optimizer = DeepSpeedCPUAdam(self.parameters(), lr=self.learning_rate)
+        optimizer = FusedAdam(self.parameters(), lr=self.learning_rate)
         lr_scheduler = ReduceLROnPlateau(
             optimizer, factor=0.1, patience=self.args.patience
         )
