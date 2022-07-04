@@ -79,13 +79,19 @@ def main(args):
         # strategy="deepspeed_stage_3",
         precision=16 if args.fp16 == 16 else 32,
     )
+    # scale batch size
     tuner = Tuner(trainer)
     new_batch_size = tuner.scale_batch_size(
         lit_model, mode="binsearch", init_val=128, max_trials=3, datamodule=cifar
     )
     lit_model.hparams.batch_size = new_batch_size
-    new_lr = tuner.lr_find(lit_model).results.suggenstion()
-    lit_model.hparams.learning_rate = new_lr
+    # learinig rate finding
+    lr_finder = tuner.lr_find(lit_model, datamodule=cifar)
+    fig = lr_finder.plot(suggest=True)
+    fig.show()
+    lit_model.hparams.learning_rate = lr_finder.suggestion()
+
+    # training
     trainer.fit(lit_model, cifar)
     cifar.setup(stage="test")
     trainer.test(lit_model, datamodule=cifar)
