@@ -72,8 +72,8 @@ def main(args):
             LearningRateMonitor(logging_interval="step"),
             TQDMProgressBar(refresh_rate=50),
         ],
-        # strategy="deepspeed_stage_2_offload",
-        strategy="deepspeed_stage_3",
+        strategy="deepspeed_stage_2_offload",
+        # strategy="deepspeed_stage_3",
         precision=16 if args.fp16 == 16 else 32,
     )
     trainer.fit(lit_model, cifar)
