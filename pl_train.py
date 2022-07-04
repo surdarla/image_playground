@@ -61,6 +61,7 @@ def main(args):
     trainer = pl.Trainer(
         # max_epochs=100, # max_epochs=-1
         accelerator="gpu",
+        log_every_n_steps=10,
         auto_lr_find=True,
         auto_scale_batch_size="binsearch",  # not compatible with deepspeed
         accumulate_grad_batches={0: 8, 4: 4, 8: 1},
@@ -83,7 +84,8 @@ def main(args):
         lit_model, mode="binsearch", init_val=128, max_trials=3, datamodule=cifar
     )
     lit_model.hparams.batch_size = new_batch_size
-    # trainer.tune(lit_model, datamodule=cifar)
+    new_lr = tuner.lr_find(lit_model).results.suggenstion()
+    lit_model.hparams.learning_rate = new_lr
     trainer.fit(lit_model, cifar)
     cifar.setup(stage="test")
     trainer.test(lit_model, datamodule=cifar)
