@@ -132,7 +132,7 @@ class CosineAnnealingWarmupRestarts(_LRScheduler):
         gamma: float = 1.0,
         last_epoch: int = -1,
     ):
-        # assert warmup_steps < first_cycle_steps
+        assert warmup_steps < first_cycle_steps
 
         self.first_cycle_steps = first_cycle_steps  # first cycle step size
         self.cycle_mult = cycle_mult  # cycle steps magnification

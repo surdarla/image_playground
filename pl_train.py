@@ -33,6 +33,7 @@ def main(args):
         root=args.data_dir,
         batch_size=args.batch_size,
         this_fold=args.fold,
+        num_workers=args.num_workers,
     )
     cifar.prepare_data()
     cifar.setup(stage="fit")
