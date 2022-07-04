@@ -45,7 +45,7 @@ class MyModule(pl.LightningModule):
             cycle_mult=0.75,
             max_lr=self.learning_rate,
             min_lr=self.learning_rate * 0.01,
-            warmup_steps=total_steps // 9,
+            warmup_steps=48000 // self.args.batch_size * 3,
             gamma=0.75,
         )
         lr_scheduler = CosineAnnealingWarmupRestarts(optimizer, **my_scheduler_dict)
