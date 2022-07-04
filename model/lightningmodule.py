@@ -8,6 +8,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 import pytorch_lightning as pl
 import torchmetrics
 from deepspeed.ops.adam import DeepSpeedCPUAdam, FusedAdam
+from utils import CosineAnnealingWarmupRestarts
 
 
 class MyModule(pl.LightningModule):
@@ -34,9 +35,19 @@ class MyModule(pl.LightningModule):
     def configure_optimizers(self):
         optimizer = DeepSpeedCPUAdam(self.parameters(), lr=self.learning_rate)
         # optimizer = FusedAdam(self.parameters(), lr=self.learning_rate)
-        lr_scheduler = ReduceLROnPlateau(
-            optimizer, factor=0.1, patience=self.args.patience
+        # lr_scheduler = ReduceLROnPlateau(
+        #     optimizer, factor=0.1, patience=self.args.patience
+        # )
+        total_steps = len(self.train_loader) // self.args.batch_size * self.args.epochs
+        my_scheduler_dict = dict(
+            first_cycle_steps=total_steps,
+            cycle_mult=0.75,
+            max_lr=self.learning_rate,
+            min_lr=self.learning_rate * 0.01,
+            warmup_steps=self.args.batch_size * 3,
+            gamma=0.75,
         )
+        lr_scheduler = CosineAnnealingWarmupRestarts(optimizer, **my_scheduler_dict)
         return {
             "optimizer": optimizer,
             "lr_scheduler": lr_scheduler,

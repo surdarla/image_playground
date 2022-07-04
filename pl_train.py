@@ -24,7 +24,8 @@ def main(args):
     # setting wandb in image_playground project
     wandb.login(key=args.wandb_key)
     wandb_logger = WandbLogger(
-        name=f"{args.model_name}-{args.batch_size}", project="image_playground"
+        name=f"{args.model_name}-{args.batch_size}-{args.fp16}",
+        project="image_playground",
     )
 
     # getting data
