@@ -57,7 +57,7 @@ def main(args):
     pl.seed_everything(43)
     trainer = pl.Trainer(
         # max_epochs=100, # max_epochs=-1
-        accelerator="auto",
+        accelerator="gpu",
         # auto_lr_find=True,
         # auto_scale_batch_size="binsearch", # not compatible with deepspeed
         ## for grad accum
