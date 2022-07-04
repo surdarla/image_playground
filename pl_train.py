@@ -74,7 +74,7 @@ def main(args):
         ],
         # strategy="deepspeed_stage_2_offload",
         strategy="deepspeed_stage_3",
-        precision=16 if args.fp16 else 32,
+        precision=16 if args.fp16 is True else 32,
     )
     trainer.fit(lit_model, cifar)
     cifar.setup(stage="test")
