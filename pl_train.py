@@ -59,7 +59,7 @@ def main(args):
 
     pl.seed_everything(43)
     trainer = pl.Trainer(
-        # max_epochs=100, # max_epochs=-1
+        max_epochs=args.epochs,  # max_epochs=-1
         accelerator="gpu",
         log_every_n_steps=10,
         # auto_lr_find=True,
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     parser.add_argument("--gpus", default=1, type=int)
     parser.add_argument("--batch_size", default=256, type=int)
     parser.add_argument("--batch_norm", default=True, type=bool)
-    parser.add_argument("--epochs", default=-1, type=int)
+    parser.add_argument("--epochs", default=100, type=int)
     parser.add_argument("--image_size", default=32, type=int)
     parser.add_argument("--fold", default=0, type=int)
     parser.add_argument("--init_weight", default=True, type=bool)
